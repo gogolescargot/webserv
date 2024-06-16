@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.hpp                                        :+:      :+:    :+:   */
+/*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/13 16:10:27 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/16 21:47:24 by ggalon           ###   ########.fr       */
+/*   Created: 2024/06/16 21:07:26 by ggalon            #+#    #+#             */
+/*   Updated: 2024/06/16 22:10:07 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#include "webserv.hpp"
 
-# include <iostream>
-# include <fstream>
-# include <string>
-# include <cstring>
+int config(const char *filePath)
+{
+	ConfigFile config(filePath);
+	
+	if (config.open())
+	{
+		return (1);
+	}
 
-# include "ConfigFile.hpp"
+	config.read();
 
-void error(const std::string& message);
-int config(const char *filepath);
+	// config.parse();
+	
+	config.close();
 
-#endif
+	return (0);
+}
