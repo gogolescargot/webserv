@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/18 15:48:15 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/19 13:10:06 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ std::string ConfigFile::word(size_t &i)
 	size_t iTemp = i;
 	size_t j = 0;
 
-	if (isSeparator(_content[iTemp]))
+	if (isSeparator(_content[iTemp + j]))
 	{
 		return (_content.substr(iTemp, 1));
 	}
@@ -95,6 +95,8 @@ std::string ConfigFile::word(size_t &i)
 		i++;
 		j++;
 	}
+
+	i--;
 
 	return (_content.substr(iTemp, j));
 }
@@ -122,6 +124,14 @@ int ConfigFile::isSeparator(char c)
 
 int ConfigFile::parse()
 {
+	for (size_t i = 0; i < _tokens.size(); i++)
+	{
+		if (_tokens[i] == "server")
+		{
+			
+		}
+	}
+
 	for (size_t i = 0; i < _tokens.size(); i++)
 	{
 		std::cout << _tokens[i] << std::endl;
