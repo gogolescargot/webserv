@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:17:35 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/18 14:54:47 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/19 12:29:31 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <vector>
 #include <sstream>
 #include "Server.hpp"
+#include <sys/stat.h>
 
 class Location
 {

@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/18 14:54:16 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/19 12:36:38 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,18 +101,28 @@ const std::string &Location::getUploadDir() const
 void Location::setPath(std::istringstream &iss)
 {
 	std::string path;
+	struct stat s;
 	
 	if (!(iss >> path))
 		throw std::runtime_error("Error: invalid path");
+	if (stat(path.c_str(), &s) == -1)
+		throw std::runtime_error("Error: invalid path, path does not exist");
+	if (!(s.st_mode && S_IFDIR))
+		throw std::runtime_error("Error: path is not a directory");
 	_path = path;
 }
 
 void Location::setRootPath(std::istringstream &iss)
 {
 	std::string root;
+	struct stat s;
 	
 	if (!(iss >> root))
 		throw std::runtime_error("Error: invalid root path");
+	if (stat(root.c_str(), &s) == -1)
+		throw std::runtime_error("Error: invalid root path, root path does not exist");
+	if (!(s.st_mode && S_IFDIR))
+		throw std::runtime_error("Error: root path is not a directory");
 	_root = root;
 }
 
@@ -169,7 +179,7 @@ void Location::setRedirect(std::istringstream &iss)
 	_redirectPath = path;
 }
 
-void Location::addCGI(std::istringstream &iss)`
+void Location::addCGI(std::istringstream &iss)
 {
 	std::string extension;
 	std::string path;
@@ -182,8 +192,13 @@ void Location::addCGI(std::istringstream &iss)`
 void Location::setUploadDir(std::istringstream &iss)
 {
 	std::string uploadDir;
-	
+	struct stat s;
+
 	if (!(iss >> uploadDir))
 		throw std::runtime_error("Error: invalid upload directory");
+	if (stat(uploadDir.c_str(), &s) == -1)
+		throw std::runtime_error("Error: invalid path, path does not exist");
+	if (!(s.st_mode && S_IFDIR))
+		throw std::runtime_error("Error: path is not a directory");
 	_uploadDir = uploadDir;
 }
