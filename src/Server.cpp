@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/18 14:31:35 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/19 15:41:35 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "webserv.hpp"
 
 Server::Server() : _maxBodySize(0)
 {
@@ -57,8 +57,8 @@ const std::vector<Location *> &Server::getLocations() const
 	return _locations;
 }
 
-const std::map<int, const std::string> Server::getErrorPages(const std::string &errorPages)
-{
-	return _errorPages;
-}
+// const std::map<int, const std::string> Server::getErrorPages(const std::string &errorPages)
+// {
+// 	return _errorPages;
+// }
 
