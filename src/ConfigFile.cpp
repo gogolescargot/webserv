@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/20 19:08:04 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/20 20:38:40 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,15 +164,15 @@ int ConfigFile::checkTokenFunction(const size_t &i, int (*func)(int))
 
 int ConfigFile::isKeyword(size_t &i)
 {
-	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "allow_methods"};
-	const std::string keyword_multiple[] = {"error_pages", "return", "allow_methods", "index", "cgi"};
+	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "allow_methods", "allow_methods"};
+	const std::string keyword_multiple[] = {"error_pages", "return", "index", "cgi"};
 
 	if (i >= _tokens.size())
 	{
 		return (0);
 	}
 
-	for (size_t j = 0; j < 6; j++)
+	for (size_t j = 0; j < 8; j++)
 	{
 		if (_tokens[i] == keyword_single[j])
 		{
@@ -180,7 +180,7 @@ int ConfigFile::isKeyword(size_t &i)
 		}
 	}
 
-	for (size_t j = 0; j < 1; j++)
+	for (size_t j = 0; j < 4; j++)
 	{
 		if (_tokens[i] == keyword_multiple[j])
 		{
@@ -275,6 +275,54 @@ int ConfigFile::checkErrorPages(size_t i)
 	return (0);
 }
 
+int ConfigFile::checkIndex(size_t &i, Server &server)
+{
+	if (checkToken(i, ";"))
+	{
+		error("Formatting error: Not enough argument");
+		return (1);
+	}
+	while (!checkToken(i, ";"))
+	{
+		std::istringstream iss(_tokens[i]);
+		server.addIndex(iss);
+		i++;
+	}
+	if (i >= _tokens.size())
+	{
+		error("Formatting error: Index error");
+		return (1);
+	}
+
+	i++;
+
+	return (0);
+}
+
+int ConfigFile::checkIndexLocation(size_t &i, Location &location)
+{
+	if (checkToken(i, ";"))
+	{
+		error("Formatting error: Not enough argument");
+		return (1);
+	}
+	while (!checkToken(i, ";"))
+	{
+		std::istringstream iss(_tokens[i]);
+		location.addIndex(iss);
+		i++;
+	}
+	if (i >= _tokens.size())
+	{
+		error("Formatting error: Index error");
+		return (1);
+	}
+
+	i++;
+
+	return (0);
+}
+
 int ConfigFile::getMultipleArgument(size_t &i, Server &server)
 {
 	const int key = i;
@@ -291,8 +339,13 @@ int ConfigFile::getMultipleArgument(size_t &i, Server &server)
 
 		i += 3;
 	}
-
-	// else if ()
+	else if (checkToken(key, "index"))
+	{
+		if (checkIndex(i, server))
+		{
+			return (1);
+		}
+	}
 	
 	return (0);
 }
@@ -341,38 +394,32 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 	return (0);
 }
 
-// int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
-// {
-// 	const int key = i;
+int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
+{
+	const int key = i;
 
-// 	i++;
+	i++;
 
-// 	if (checkToken(key, "error_pages"))
-// 	{
-// 		if (checkErrorPages(i))
-// 		{
-// 			return (1);
-// 		}
-// 		server.setErrorPages(std::atoi(_tokens[i].c_str()), _tokens[i + 1]);
+	if (checkToken(key, "error_pages"))
+	{
+		if (checkErrorPages(i))
+		{
+			return (1);
+		}
+		location.setErrorPages(std::atoi(_tokens[i].c_str()), _tokens[i + 1]);
 
-// 		i += 3;
-// 	}
-
-//     if (checkToken(key, "allow_methods"))
-// 	{
-// 		location.setAllowMethods(iss);
-// 	}
-// 	else if (checkToken(key, "index"))
-// 	{
-// 		location.addIndex(iss);
-// 	}
-// 	else if (checkToken(key, "cgi"))
-// 	{
-// 		location.addCGI(iss);
-// 	}
+		i += 3;
+	}
+	else if (checkToken(key, "index"))
+	{
+		if (checkIndexLocation(i, location))
+		{
+			return (1);
+		}
+	}
 	
-// 	return (0);
-// }
+	return (0);
+}
 
 int ConfigFile::getLocation(size_t &i, Server &server)
 {
@@ -408,13 +455,13 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 				return (1);
 			}
 		}
-		// else if (isKeyword(i) == 2)
-		// {
-		// 	if (getMultipleArgumentLocation(i, location))
-		// 	{
-		// 		return (1);
-		// 	}
-		// }
+		else if (isKeyword(i) == 2)
+		{
+			if (getMultipleArgumentLocation(i, location))
+			{
+				return (1);
+			}
+		}
 		else
 		{
 			error("Formatting error: Wrong keyword");
@@ -483,7 +530,6 @@ int ConfigFile::createServer(size_t &i)
 				error("Formatting error: Wrong keyword");
 				return (1);
 			}
-			std::cout << _tokens[i] << std::endl;
 		}
 	}
 
@@ -492,8 +538,6 @@ int ConfigFile::createServer(size_t &i)
 		error("Formatting error: Bracket error");
 		return (1);
 	}
-
-	// server.displayServer();
 	
 	return (0);
 }

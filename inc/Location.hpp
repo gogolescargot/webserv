@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:17:35 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/20 18:27:02 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/20 20:37:06 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class Location
 		Location &operator=(const Location &copy);
 		
 		void setPath(std::istringstream &iss);
+		void setErrorPages(int errCode, const std::string &errorPages);
 		void setRootPath(std::istringstream &iss);
 		void addIndex(std::istringstream &iss);
 		void setAutoIndex(std::istringstream &iss);
@@ -54,6 +55,7 @@ class Location
 	private:
 		std::string							_path;
 		std::string							_root;
+		std::map<int, const std::string>	_errorPages;
 		std::vector<std::string>			_indexes;
 		bool								_autoIndex;
 		std::vector<std::string>			_allowMethods;
