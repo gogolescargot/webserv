@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:17:35 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/19 14:44:03 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/20 18:27:02 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Location
 		Server *getServer() const;
 		const std::map<std::string, std::string> &getCGI() const;
 		const std::string &getUploadDir() const;
+
 	private:
 		std::string							_path;
 		std::string							_root;
