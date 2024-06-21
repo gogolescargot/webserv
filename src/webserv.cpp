@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:14 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/16 22:05:53 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 02:43:01 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,18 @@ int main(int argc, const char *argv[])
 		return (1);
 	}
 	
-	if (config(argv[1]))
+	try 
 	{
-		return (1);
+		if (config(argv[1]))
+		{
+			return (1);
+		}
 	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
 
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/20 18:45:10 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 03:05:58 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Server
 		void setRedirect(std::istringstream &iss);
 		void addCGI(std::istringstream &iss);
 		void setUploadDir(std::istringstream &iss);
-		
+
 		const std::string &getRootPath() const;
 		const std::vector<std::string> &getIndexes() const;
 		const bool &getAutoIndex() const;

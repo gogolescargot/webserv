@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/20 20:38:40 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 03:07:18 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int ConfigFile::open()
 	if (_stream.fail())
 	{
 		std::string errorOutput(strerror(errno));
-		error(errorOutput + ": " + _path);
+		throw std::runtime_error(errorOutput + ": " + _path);
 		return (1);
 	}
 	
@@ -204,8 +204,7 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 
 	if (checkTokenFunction(i, isSeparator))
 	{
-		error("Formatting error: Not enough argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Not enough argument");
 	}
 	
 	std::istringstream iss(_tokens[i]);
@@ -239,8 +238,7 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 
 	if (!checkToken(i, ";"))
 	{
-		error("Formatting error: Too many argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
 	i++;
@@ -252,24 +250,21 @@ int ConfigFile::checkErrorPages(size_t i)
 {
 	if (!checkTokenFunction(i, isdigit))
 	{
-		error("Formatting error: Invalid error code");
-		return (1);
+		throw std::runtime_error("Formatting error: Invalid error code");
 	}
 
 	i++;
 	
 	if (checkTokenFunction(i, isSeparator))
 	{
-		error("Formatting error: Not enough argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Not enough argument");
 	}
 
 	i++;
 
 	if (!checkToken(i, ";"))
 	{
-		error("Formatting error: Too many argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
 	return (0);
@@ -279,8 +274,7 @@ int ConfigFile::checkIndex(size_t &i, Server &server)
 {
 	if (checkToken(i, ";"))
 	{
-		error("Formatting error: Not enough argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Not enough argument");
 	}
 	while (!checkToken(i, ";"))
 	{
@@ -290,8 +284,7 @@ int ConfigFile::checkIndex(size_t &i, Server &server)
 	}
 	if (i >= _tokens.size())
 	{
-		error("Formatting error: Index error");
-		return (1);
+		throw std::runtime_error("Formatting error: Index error");
 	}
 
 	i++;
@@ -303,8 +296,7 @@ int ConfigFile::checkIndexLocation(size_t &i, Location &location)
 {
 	if (checkToken(i, ";"))
 	{
-		error("Formatting error: Not enough argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Not enough argument");
 	}
 	while (!checkToken(i, ";"))
 	{
@@ -314,11 +306,58 @@ int ConfigFile::checkIndexLocation(size_t &i, Location &location)
 	}
 	if (i >= _tokens.size())
 	{
-		error("Formatting error: Index error");
-		return (1);
+		throw std::runtime_error("Formatting error: Index error");
 	}
 
 	i++;
+
+	return (0);
+}
+
+int ConfigFile::checkRedirect(size_t i)
+{
+	if (!checkTokenFunction(i, isdigit))
+	{
+		throw std::runtime_error("Formatting error: Invalid error code");
+	}
+
+	i++;
+	
+	if (checkTokenFunction(i, isSeparator))
+	{
+		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	i++;
+
+	if (!checkToken(i, ";"))
+	{
+		throw std::runtime_error("Formatting error: Too many argument");
+	}
+
+	return (0);
+}
+
+int ConfigFile::checkCgi(size_t i)
+{
+	if (checkTokenFunction(i, isSeparator))
+	{
+		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	i++;
+	
+	if (checkTokenFunction(i, isSeparator))
+	{
+		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	i++;
+
+	if (!checkToken(i, ";"))
+	{
+		throw std::runtime_error("Formatting error: Too many argument");
+	}
 
 	return (0);
 }
@@ -346,6 +385,30 @@ int ConfigFile::getMultipleArgument(size_t &i, Server &server)
 			return (1);
 		}
 	}
+	else if (checkToken(key, "cgi"))
+	{
+		if (checkCgi(i))
+		{
+			return (1);
+		}
+		
+		std::istringstream iss(_tokens[i] + " " + _tokens[i + 1]);
+		server.addCGI(iss);
+
+		i += 3;
+	}
+	else if (checkToken(key, "return"))
+	{
+		if (checkRedirect(i))
+		{
+			return (1);
+		}
+		
+		std::istringstream iss(_tokens[i] + " " + _tokens[i + 1]);
+		server.setRedirect(iss);
+
+		i += 3;
+	}
 	
 	return (0);
 }
@@ -358,8 +421,7 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 
 	if (checkTokenFunction(i, isSeparator))
 	{
-		error("Formatting error: Not enough argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Not enough argument");
 	}
 
 	std::istringstream iss(_tokens[i]);
@@ -385,8 +447,7 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 
 	if (!checkToken(i, ";"))
 	{
-		error("Formatting error: Too many argument");
-		return (1);
+		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
 	i++;
@@ -417,6 +478,30 @@ int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
 			return (1);
 		}
 	}
+	else if (checkToken(key, "cgi"))
+	{
+		if (checkCgi(i))
+		{
+			return (1);
+		}
+		
+		std::istringstream iss(_tokens[i] + " " + _tokens[i + 1]);
+		location.addCGI(iss);
+
+		i += 3;
+	}
+	else if (checkToken(key, "return"))
+	{
+		if (checkRedirect(i))
+		{
+			return (1);
+		}
+		
+		std::istringstream iss(_tokens[i] + " " + _tokens[i + 1]);
+		location.setRedirect(iss);
+
+		i += 3;
+	}
 	
 	return (0);
 }
@@ -429,8 +514,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 	
 	if (checkTokenFunction(i, isSeparator))
 	{
-		error("Formatting error: Missing location path");
-		return (1);
+		throw std::runtime_error("Formatting error: Missing location path");
 	}
 
 	std::istringstream path(_tokens[i]); 
@@ -440,8 +524,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 
 	if (!checkToken(i, "{"))
 	{
-		error("Formatting error: Missing opening bracket");
-		return (1);
+		throw std::runtime_error("Formatting error: Missing opening bracket");
 	}
 
 	i++;
@@ -464,8 +547,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 		}
 		else
 		{
-			error("Formatting error: Wrong keyword");
-			return (1);
+			throw std::runtime_error("Formatting error: Wrong keyword");
 		}
 	}
 
@@ -485,8 +567,7 @@ int ConfigFile::createServer(size_t &i)
 
 	if (!checkToken(i, "{"))
 	{
-		error("Formatting error: Missing bracket");
-		return (1);
+		throw std::runtime_error("Formatting error: Missing bracket");
 	}
 
 	bracket++;
@@ -527,16 +608,14 @@ int ConfigFile::createServer(size_t &i)
 			}
 			else
 			{
-				error("Formatting error: Wrong keyword");
-				return (1);
+				throw std::runtime_error("Formatting error: Wrong keyword");
 			}
 		}
 	}
 
 	if (bracket != 0)
 	{
-		error("Formatting error: Bracket error");
-		return (1);
+		throw std::runtime_error("Formatting error: Bracket error");
 	}
 	
 	return (0);
