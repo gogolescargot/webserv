@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 03:05:58 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:37:45 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Server
 		void setMaxBodySize(size_t maxBodySize);
 		void addLocation(Location *location);
 		size_t getMaxBodySize() const;
-		const std::string &getHostNames() const;
+		const std::string &getHostName() const;
 		const std::vector<Location *> &getLocations() const;
 		const std::map<int, const std::string> getErrorPages(const std::string &errorPages);
 

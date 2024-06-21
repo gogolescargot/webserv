@@ -6,13 +6,13 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:07:26 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/20 17:49:51 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:34:05 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-int config(const char *filePath)
+int config(const char *filePath, std::map<std::string, Server> &serverList)
 {
 	ConfigFile config(filePath);
 	
@@ -25,7 +25,7 @@ int config(const char *filePath)
 
 	config.token();
 
-	config.parse();
+	config.parse(serverList);
 	
 	config.close();
 

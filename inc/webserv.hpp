@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:27 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/20 14:55:40 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:33:42 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include "Server.hpp"
 
 void error(const std::string& message);
-int config(const char *filepath);
+int config(const char *filepath, std::map<std::string, Server> &serverList);
 int isSeparator(int c);
 
 #endif

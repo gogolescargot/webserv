@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:40:32 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 03:06:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:35:13 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ class ConfigFile
 		int open();
 		int close();
 		int token();
-		int parse();
+		int parse(std::map<std::string, Server>&);
 
 		std::string word(size_t &);
 		int comment(size_t &);
 
-		int createServer(size_t &);
+		int createServer(size_t &, std::map<std::string, Server>&);
 		int checkToken(const size_t&, const std::string&);
 		int checkTokenFunction(const size_t &, int (*func)(int));
 		int isKeyword(size_t&);

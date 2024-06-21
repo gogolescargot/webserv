@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/20 18:51:37 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:37:57 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ size_t Server::getMaxBodySize() const
 	return _maxBodySize;
 }
 
-const std::string &Server::getHostNames() const
+const std::string &Server::getHostName() const
 {
 	return _hostname;
 }

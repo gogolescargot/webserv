@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 03:07:18 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/21 17:38:06 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,10 +112,8 @@ int ConfigFile::comment(size_t &i)
 	return (0);
 }
 
-int ConfigFile::parse()
+int ConfigFile::parse(std::map<std::string, Server> &serverList)
 {
-	std::vector<Server> serverList;
-
 	for (size_t i = 0; i < _tokens.size(); i++)
 	{
 		std::cout << _tokens[i] << std::endl;
@@ -125,7 +123,7 @@ int ConfigFile::parse()
 	{
 		if (_tokens[i] == "server")
 		{
-			if (createServer(i))
+			if (createServer(i, serverList))
 			{
 				return (1);
 			}
@@ -558,7 +556,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 	return (0);
 }
 
-int ConfigFile::createServer(size_t &i)
+int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverList)
 {
 	Server server;
 	size_t bracket = 0;
@@ -617,6 +615,8 @@ int ConfigFile::createServer(size_t &i)
 	{
 		throw std::runtime_error("Formatting error: Bracket error");
 	}
+
+	serverList.insert(std::make_pair(server.getHostName(), server));
 	
 	return (0);
 }
