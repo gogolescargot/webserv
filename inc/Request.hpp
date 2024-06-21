@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 15:12:09 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/21 16:33:47 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
-#define CRLB "\r\n"
+#include <algorithm>
+#define CRLF "\r\n"
 
 
 class Request
@@ -33,9 +34,12 @@ class Request
 		std::map<std::string, std::string> _mimeTypes;
 		std::map<long, std::string> _errorCodes;
 		std::string _content;
+		std::string _body;
+		bool is_bad_request;
 	public:
 		void initialize();
 		void parseRequest(std::string &msg);
 		void getFileContent(std::string filename);
 		void onMessageReceived(std::string &msg, Server &server);
+		int	checkRequest(std::string &msg);
 };

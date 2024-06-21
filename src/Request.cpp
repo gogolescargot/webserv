@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 15:26:24 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/21 16:42:48 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,6 @@
 
 void	Request::initialize()
 {
-	std::string extension;
-
-	extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
 	_mimeTypes[".html"] = "text/html";
 	_mimeTypes[".css"] = "text/css";
 	_mimeTypes[".js"] = "application/javascript";
@@ -39,9 +36,6 @@ void	Request::initialize()
 	_mimeTypes[".json"] = "application/json";
 	_mimeTypes[".mp4"] = "video/mp4";
 	_mimeTypes[".mp3"] = "audio/mpeg";
-	_headers["Connection"] = "Keep-Alive";
-	_headers["Content-Type"] = _mimeTypes[extension];
-	_headers["Cache-Control"] = "no-cache, private";
 	_errorCodes[200] = "OK";
 	_errorCodes[201] = "Created";
 	_errorCodes[400] = "Bad Request";
@@ -52,6 +46,13 @@ void	Request::initialize()
 	_errorCodes[418] = "I'm a teapot";
 	_errorCodes[502] = "Bad Gateway";
 	_errorCodes[503] = "Service Unavailable";
+	if (_headers["Content-Type"].empty())
+	{
+		std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
+		_headers["Content-Type"] = _mimeTypes[extension];
+	}
+	_headers["Connection"] = "Keep-Alive";
+	_headers["Cache-Control"] = "no-cache, private";
 }
 
 void	Request::getFileContent(std::string filename)
@@ -74,52 +75,104 @@ void	Request::getFileContent(std::string filename)
 void	Request::onMessageReceived(std::string &msg, Server &server)
 {
 	(void)server;
-	if (_method != "GET")
+	if (is_bad_request)
 	{
-		_headers["Content-Length"] = "0";
-		_headers["Status"] = "405 Method Not Allowed";
+		_headers["Status"] = "400 Bad Request";
 		_headers["Content-Type"] = "text/html";
-		getFileContent("405.html");
-	}
-	else if (_filename == "/")
-	{
-		_headers["Server"] = "200" + _errorCodes[200];
-		_headers["Content-Type"] = "text/html";
-		_headers["Status"] = "200 OK";
-		getFileContent("/index.html");
+		getFileContent("/400.html");
 	}
 	else
 	{
-		_headers["Status"] = "200 OK";
-		_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.rfind("."))];
-		getFileContent(_filename);
+		if (_method != "GET" || _method != "POST" || _method != "DELETE")
+		{
+			_headers["Content-Length"] = "0";
+			_headers["Status"] = "405 Method Not Allowed";
+			_headers["Content-Type"] = "text/html";
+			getFileContent("/405.html");
+		}
+		if (_body.empty())
+		{
+			if (_filename == "/")
+			{
+				_headers["Server"] = "200" + _errorCodes[200];
+				_headers["Content-Type"] = "text/html";
+				_headers["Status"] = "200 OK";
+				getFileContent("/index.html");
+			}
+			else
+			{
+				_headers["Status"] = "200 OK";
+				_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.rfind("."))];
+				getFileContent(_filename);
+			}
+		}
+		else
+		{
+			// HANDLE POST REQUEST
+		}
 	}
 	
-	std::string response = _httpVersion + " " + _headers["Status"] + CRLB;
+	std::string response = _httpVersion + " " + _headers["Status"] + CRLF;
 	for (std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); it++)
 	{
-		response += it->first + ": " + it->second + CRLB;
+		response += it->first + ": " + it->second + CRLF;
 	}
-	response += CRLB + _content;
+	response += CRLF + _content;
 	std::cout << response << std::endl;
 	//sendToClient(socket, response.c_str(), response.size() + 1);
 }
 
+int	Request::checkRequest(std::string &msg)
+{
+	std::string line;
+	std::istringstream iss(msg);
+	std::getline(iss, line);
+	std::istringstream lineStream(line);
+	std::vector<std::string> parsedLine((std::istream_iterator<std::string>(lineStream)), std::istream_iterator<std::string>());
+
+	if (parsedLine.size() != 3 || parsedLine[2] != "HTTP/1.1\r")
+		return -1;
+	return 0;
+}
+
 void	Request::parseRequest(std::string &msg)
 {
-	std::istringstream iss(msg);
-	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-	std::string line;
-	for (size_t i = 0; i < parsed.size(); i++)
+	if (checkRequest(msg) == -1)
 	{
-		if (i == 0)
-			_method = parsed[i];
-		else if (i == 1)
-			_filename = parsed[i];
-		else if (i == 2)
-			_httpVersion = parsed[i];
-		else if (parsed[i] == "Host:")
-			_headers["Host"] = parsed[i + 1];
+		is_bad_request = true;
+		return ;
+	}
+	 // Use a stringstream to parse the HTTP request
+    std::istringstream request_stream(msg);
+    std::string line;
+
+	// Parse the request line
+    if (std::getline(request_stream, line)) {
+        std::istringstream request_line(line);
+        request_line >> _method >> _filename >> _httpVersion;
+    }
+
+	// Parse headers
+    while (std::getline(request_stream, line) && !line.empty()) {
+        if (line == "\r") {
+            break; // End of headers
+        }
+        std::string::size_type pos = line.find(": ");
+        if (pos != std::string::npos) {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 2);
+            _headers[key] = value;
+        }
+    }
+
+	// Parse body
+	if (_method == "POST")
+	{
+		std::string body;
+		while (std::getline(request_stream, line)) {
+			body += line + "\n";
+		}
+		_body = body;
 	}
 	initialize();
 }
