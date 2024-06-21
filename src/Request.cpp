@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 16:42:48 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:23:03 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	Request::initialize()
 		std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
 		_headers["Content-Type"] = _mimeTypes[extension];
 	}
+	_headers["Server"] = "Webserv/1.0";
 	_headers["Connection"] = "Keep-Alive";
 	_headers["Cache-Control"] = "no-cache, private";
 }
@@ -90,11 +91,10 @@ void	Request::onMessageReceived(std::string &msg, Server &server)
 			_headers["Content-Type"] = "text/html";
 			getFileContent("/405.html");
 		}
-		if (_body.empty())
+		if (_method == "GET")
 		{
 			if (_filename == "/")
 			{
-				_headers["Server"] = "200" + _errorCodes[200];
 				_headers["Content-Type"] = "text/html";
 				_headers["Status"] = "200 OK";
 				getFileContent("/index.html");
@@ -106,9 +106,38 @@ void	Request::onMessageReceived(std::string &msg, Server &server)
 				getFileContent(_filename);
 			}
 		}
-		else
+		else if (_method == "POST")
 		{
-			// HANDLE POST REQUEST
+			std::ofstream file("files/" + _filename);
+			if (file && file.is_open())
+			{
+				file << _body;
+				file.close();
+				_headers["Status"] = "201 Created";
+				_headers["Content-Type"] = "text/html";
+				getFileContent("/index.html");
+			}
+			else
+			{
+				_headers["Status"] = "502 Bad Gateway";
+				_headers["Content-Type"] = "text/html";
+				getFileContent("/502.html");
+			}
+		}
+		else if (_method == "DELETE")
+		{
+			if (remove(("files/" + _filename).c_str()) != 0)
+			{
+				_headers["Status"] = "404 Not Found";
+				_headers["Content-Type"] = "text/html";
+				getFileContent("/404.html");
+			}
+			else
+			{
+				_headers["Status"] = "204 No Content";
+				_headers["Content-Type"] = "text/html";
+				getFileContent("/204.html");
+			}
 		}
 	}
 	

@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 16:33:47 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:14:20 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 #include <sstream>
 #include <iterator>
 #include <algorithm>
+#include <unistd.h>
+#include <cstdlib>
+
 #define CRLF "\r\n"
 
 
