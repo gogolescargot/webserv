@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 18:04:19 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 18:43:23 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	Request::initialize()
 
 void	Request::getFileContent(const std::string &filename)
 {
-	std::ifstream file((".\\wwwroot" + filename).c_str());
+	std::ifstream file(("./wwwroot" + filename).c_str());
 	if (file.good())
 	{
 		std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -120,7 +120,11 @@ void	Request::onMessageReceived(int client_fd)
 			else
 			{
 				_headers["Status"] = "200 OK";
-				_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.rfind("."))];
+				size_t fileExtensionIndex = _filename.rfind(".");
+				if (fileExtensionIndex == std::string::npos)
+					_headers["Content-Type"] = _mimeTypes[".html"];
+				else
+					_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
 				getFileContent(_filename);
 			}
 		}
