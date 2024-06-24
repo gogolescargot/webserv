@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 18:43:23 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 20:59:45 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void	Request::onMessageReceived(int client_fd)
 	}
 	response += CRLF + _content;
 	std::cout << response << std::endl;
-	//sendToClient(socket, response.c_str(), response.size() + 1);
+	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
 
 int	Request::checkRequest(std::string &msg)
