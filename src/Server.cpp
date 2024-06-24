@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 13:41:10 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 14:32:08 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,15 @@ Server::~Server()
 
 void Server::setHostName(const std::string &hostname)
 {
-	_hostname = hostname;
+	std::istringstream stream(hostname);
+	std::string host;
+	int	port;
+	
+	stream >> host >> port;
+	if (stream.fail() || !stream.eof())
+		throw std::runtime_error("Error: invalid hostname");
+	_hostname = host;
+	_port = port;
 }
 
 void Server::setErrorPages(int errCode, const std::string &errorPages)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 17:38:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 14:31:45 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,10 +114,10 @@ int ConfigFile::comment(size_t &i)
 
 int ConfigFile::parse(std::map<std::string, Server> &serverList)
 {
-	for (size_t i = 0; i < _tokens.size(); i++)
-	{
-		std::cout << _tokens[i] << std::endl;
-	}
+	//for (size_t i = 0; i < _tokens.size(); i++)
+	//{
+	//	std::cout << _tokens[i] << std::endl;
+	//}
 	
 	for (size_t i = 0; i < _tokens.size(); i++)
 	{
