@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 16:49:47 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 18:02:20 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ class Request
 		std::string _body;
 		bool is_bad_request;
 	public:
+		Request();
+		~Request();
 		void initialize();
 		void parseRequest(std::string &msg);
 		void getFileContent(const std::string &filename);

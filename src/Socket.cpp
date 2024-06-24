@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 17:13:25 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 18:13:41 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,22 +74,19 @@ void Socket::launchSocket(int port)
 	}
 	// Accept incoming connections
 	int addrlen = sizeof(address);
-	while (1)
+	if ((_client_fd = accept(_server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
 	{
-		if ((_client_fd = accept(_server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
-		{
-			std::cerr << "Error: accept failed" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		
-		// Read the request from the client
-		char buffer[1024] = { 0 }; 
-		recv(_client_fd, buffer, sizeof(buffer), 0); 
-		Request req;
-		std::string tmp(buffer);
-		// std::cout << tmp << std::endl;
-		req.parseRequest(tmp);
-		req.onMessageReceived(_client_fd);
+		std::cerr << "Error: accept failed" << std::endl;
+		exit(EXIT_FAILURE);
 	}
+	
+	// Read the request from the client
+	char buffer[1024] = { 0 }; 
+	recv(_client_fd, buffer, sizeof(buffer), 0); 
+	Request req;
+	std::string tmp(buffer);
+	// std::cout << tmp << std::endl;
+	req.parseRequest(tmp);
+	req.onMessageReceived(_client_fd);
 	close(_server_fd);
 }

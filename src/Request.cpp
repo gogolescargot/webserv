@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 17:12:18 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 18:04:19 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,16 @@
 //Referer: http://example.com/previous-page
 //Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l
 //Connection: Keep-Alive
+
+Request::Request()
+{
+	is_bad_request = false;
+}
+
+Request::~Request()
+{
+	
+}
 
 template <typename T>
 std::string ToString(T val)
