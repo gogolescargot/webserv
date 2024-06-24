@@ -23,9 +23,9 @@ INCL_DIR	=	inc/
 
 NAME	=	webserv
 
-FILE_C	=	webserv
+FILE_C	=	webserv config utils ConfigFile Server Location
 
-FILE_H	=	webserv
+FILE_H	=	webserv ConfigFile Server Location
 
 SRCS	=	$(addsuffix .cpp, $(addprefix $(SRCS_DIR), $(FILE_C)))
 

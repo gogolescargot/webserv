@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/19 12:36:38 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/20 20:36:54 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,11 @@ void Location::setPath(std::istringstream &iss)
 	if (!(s.st_mode && S_IFDIR))
 		throw std::runtime_error("Error: path is not a directory");
 	_path = path;
+}
+
+void Location::setErrorPages(int errCode, const std::string &errorPages)
+{
+	_errorPages.insert(std::pair<int, const std::string>(errCode, errorPages));
 }
 
 void Location::setRootPath(std::istringstream &iss)

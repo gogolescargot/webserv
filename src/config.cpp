@@ -1,38 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/13 16:10:14 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 17:40:15 by ggalon           ###   ########.fr       */
+/*   Created: 2024/06/16 21:07:26 by ggalon            #+#    #+#             */
+/*   Updated: 2024/06/21 17:34:05 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-int main(int argc, const char *argv[])
+int config(const char *filePath, std::map<std::string, Server> &serverList)
 {
-	if (argc != 2)
+	ConfigFile config(filePath);
+	
+	if (config.open())
 	{
-		error("Wrong argument number");
 		return (1);
 	}
+
+	config.read();
+
+	config.token();
+
+	config.parse(serverList);
 	
-	try 
-	{
-		std::map<std::string, Server> serverList;
-		
-		if (config(argv[1], serverList))
-		{
-			return (1);
-		}
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
-	
+	config.close();
+
 	return (0);
 }
