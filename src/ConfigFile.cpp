@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 14:31:45 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 15:17:16 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,15 +162,15 @@ int ConfigFile::checkTokenFunction(const size_t &i, int (*func)(int))
 
 int ConfigFile::isKeyword(size_t &i)
 {
-	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "allow_methods", "allow_methods"};
-	const std::string keyword_multiple[] = {"error_pages", "return", "index", "cgi"};
+	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "allow_methods", "allow_methods", "upload_dir"};
+	const std::string keyword_multiple[] = {"error_page", "return", "index", "cgi"};
 
 	if (i >= _tokens.size())
 	{
 		return (0);
 	}
 
-	for (size_t j = 0; j < 8; j++)
+	for (size_t j = 0; j < 9; j++)
 	{
 		if (_tokens[i] == keyword_single[j])
 		{
@@ -236,6 +236,7 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 
 	if (!checkToken(i, ";"))
 	{
+		std::cout << "3: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -262,6 +263,7 @@ int ConfigFile::checkErrorPages(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
+		std::cout << "4: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -330,6 +332,7 @@ int ConfigFile::checkRedirect(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
+		std::cout << "5: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -354,6 +357,7 @@ int ConfigFile::checkCgi(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
+		std::cout << "10: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -366,7 +370,7 @@ int ConfigFile::getMultipleArgument(size_t &i, Server &server)
 
 	i++;
 
-	if (checkToken(key, "error_pages"))
+	if (checkToken(key, "error_page"))
 	{
 		if (checkErrorPages(i))
 		{
@@ -440,6 +444,10 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 	{
 		location.setUploadDir(iss);
 	}
+	else if (checkToken(key, "index"))
+	{
+		std::cout << _tokens[i] << std::endl;
+	}
 
 	i++;
 
@@ -459,7 +467,7 @@ int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
 
 	i++;
 
-	if (checkToken(key, "error_pages"))
+	if (checkToken(key, "error_page"))
 	{
 		if (checkErrorPages(i))
 		{
@@ -545,6 +553,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 		}
 		else
 		{
+			std::cout << "1: " << _tokens[i] << std::endl;
 			throw std::runtime_error("Formatting error: Wrong keyword");
 		}
 	}
@@ -606,6 +615,7 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 			}
 			else
 			{
+				std::cout << "2: " << _tokens[i] << std::endl;
 				throw std::runtime_error("Formatting error: Wrong keyword");
 			}
 		}

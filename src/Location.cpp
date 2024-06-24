@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 13:41:38 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 15:31:20 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,14 +101,9 @@ const std::string &Location::getUploadDir() const
 void Location::setPath(std::istringstream &iss)
 {
 	std::string path;
-	struct stat s;
-	
+
 	if (!(iss >> path))
 		throw std::runtime_error("Error: invalid path");
-	if (stat(path.c_str(), &s) == -1)
-		throw std::runtime_error("Error: invalid path, path does not exist");
-	if (!(s.st_mode && (bool)S_IFDIR))
-		throw std::runtime_error("Error: path is not a directory");
 	_path = path;
 }
 
