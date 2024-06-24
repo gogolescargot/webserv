@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 14:27:30 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 15:32:44 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Server
 		void addCGI(std::istringstream &iss);
 		void setUploadDir(std::istringstream &iss);
 
+		const int &getPort() const;
 		const std::string &getRootPath() const;
 		const std::vector<std::string> &getIndexes() const;
 		const bool &getAutoIndex() const;

@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 15:17:16 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 15:44:37 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,7 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 	
 	std::istringstream iss(_tokens[i]);
 
-	if (checkToken(key, "hostname"))
+	if (checkToken(key, "listen"))
 	{
 		server.setHostName(_tokens[i]);
 	}
@@ -627,6 +627,5 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 	}
 
 	serverList.insert(std::make_pair(server.getHostName(), server));
-	
 	return (0);
 }
