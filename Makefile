@@ -23,9 +23,9 @@ INCL_DIR	=	inc/
 
 NAME	=	webserv
 
-FILE_C	=	webserv config utils ConfigFile Server Location
+FILE_C	=	webserv ConfigFile Server Location Socket Request Printer
 
-FILE_H	=	webserv ConfigFile Server Location
+FILE_H	=	webserv ConfigFile Server Location Socket Request Printer
 
 SRCS	=	$(addsuffix .cpp, $(addprefix $(SRCS_DIR), $(FILE_C)))
 

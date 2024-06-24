@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:27 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 17:33:42 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 13:38:43 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#pragma once
 
 # include <iostream>
 # include <fstream>
@@ -28,5 +27,3 @@
 void error(const std::string& message);
 int config(const char *filepath, std::map<std::string, Server> &serverList);
 int isSeparator(int c);
-
-#endif

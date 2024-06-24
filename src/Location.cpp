@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/20 20:36:54 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 13:41:38 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void Location::setPath(std::istringstream &iss)
 		throw std::runtime_error("Error: invalid path");
 	if (stat(path.c_str(), &s) == -1)
 		throw std::runtime_error("Error: invalid path, path does not exist");
-	if (!(s.st_mode && S_IFDIR))
+	if (!(s.st_mode && (bool)S_IFDIR))
 		throw std::runtime_error("Error: path is not a directory");
 	_path = path;
 }
@@ -126,7 +126,7 @@ void Location::setRootPath(std::istringstream &iss)
 		throw std::runtime_error("Error: invalid root path");
 	if (stat(root.c_str(), &s) == -1)
 		throw std::runtime_error("Error: invalid root path, root path does not exist");
-	if (!(s.st_mode && S_IFDIR))
+	if (!(s.st_mode && (bool)S_IFDIR))
 		throw std::runtime_error("Error: root path is not a directory");
 	_root = root;
 }
@@ -203,7 +203,7 @@ void Location::setUploadDir(std::istringstream &iss)
 		throw std::runtime_error("Error: invalid upload directory");
 	if (stat(uploadDir.c_str(), &s) == -1)
 		throw std::runtime_error("Error: invalid path, path does not exist");
-	if (!(s.st_mode && S_IFDIR))
+	if (!(s.st_mode && (bool)S_IFDIR))
 		throw std::runtime_error("Error: path is not a directory");
 	_uploadDir = uploadDir;
 }

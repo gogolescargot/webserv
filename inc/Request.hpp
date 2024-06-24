@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 17:14:20 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 13:46:06 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Request
 	public:
 		void initialize();
 		void parseRequest(std::string &msg);
-		void getFileContent(std::string filename);
-		void onMessageReceived(std::string &msg, Server &server);
+		void getFileContent(const std::string &filename);
+		void onMessageReceived(Server &server);
 		int	checkRequest(std::string &msg);
 };

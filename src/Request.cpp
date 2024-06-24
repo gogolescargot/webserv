@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/21 17:23:03 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 13:45:58 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,14 @@
 //Referer: http://example.com/previous-page
 //Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l
 //Connection: Keep-Alive
+
+template <typename T>
+std::string ToString(T val)
+{
+    std::stringstream stream;
+    stream << val;
+    return stream.str();
+}
 
 void	Request::initialize()
 {
@@ -56,14 +64,14 @@ void	Request::initialize()
 	_headers["Cache-Control"] = "no-cache, private";
 }
 
-void	Request::getFileContent(std::string filename)
+void	Request::getFileContent(const std::string &filename)
 {
-	std::ifstream file(".\\wwwroot" + filename);
+	std::ifstream file((".\\wwwroot" + filename).c_str());
 	if (file.good())
 	{
 		std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 		_content = str;
-		_headers["Content-Length"] = std::to_string(_content.size());
+		_headers["Content-Length"] = ToString(_content.size());
 	}
 	else
 	{
@@ -73,7 +81,7 @@ void	Request::getFileContent(std::string filename)
 	}
 }
 
-void	Request::onMessageReceived(std::string &msg, Server &server)
+void	Request::onMessageReceived(Server &server)
 {
 	(void)server;
 	if (is_bad_request)
@@ -108,7 +116,7 @@ void	Request::onMessageReceived(std::string &msg, Server &server)
 		}
 		else if (_method == "POST")
 		{
-			std::ofstream file("files/" + _filename);
+			std::ofstream file(("files/" + _filename).c_str());
 			if (file && file.is_open())
 			{
 				file << _body;
