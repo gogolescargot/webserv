@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 13:28:21 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 17:13:25 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
+#include "Request.hpp"
 
 Socket::Socket()
 {
@@ -18,6 +19,15 @@ Socket::Socket()
 
 Socket::~Socket()
 {
+}
+
+Socket::Socket(std::map<std::string, Server> serverList)
+{
+	for (std::map<std::string, Server>::iterator it = serverList.begin(); it != serverList.end(); it++)
+	{
+		std::cout << it->second.getPort() << std::endl;
+		launchSocket(it->second.getPort());
+	}
 }
 
 int const &Socket::getServerFD() const
@@ -30,7 +40,7 @@ int const &Socket::getClientFD() const
 	return _client_fd;
 }
 
-void Socket::launchSocket()
+void Socket::launchSocket(int port)
 {
 	// Create a socket
 	_server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -50,7 +60,7 @@ void Socket::launchSocket()
 	struct sockaddr_in address;
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(8080);
+	address.sin_port = htons(port);
 	if (bind(_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
 	{
 		std::cerr << "Error: bind failed" << std::endl;
@@ -75,7 +85,11 @@ void Socket::launchSocket()
 		// Read the request from the client
 		char buffer[1024] = { 0 }; 
 		recv(_client_fd, buffer, sizeof(buffer), 0); 
-		std::cout << "Message from client: " << buffer << std::endl; 
+		Request req;
+		std::string tmp(buffer);
+		// std::cout << tmp << std::endl;
+		req.parseRequest(tmp);
+		req.onMessageReceived(_client_fd);
 	}
 	close(_server_fd);
 }

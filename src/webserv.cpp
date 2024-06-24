@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:14 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 15:47:30 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 15:50:39 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,6 @@ int main(int argc, const char *argv[])
 		std::cerr << e.what() << '\n';
 	}
 	
-	//Socket socket(serverList);
+	Socket socket(serverList);
 	return (0);
 }

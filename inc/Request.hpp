@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 13:46:06 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 16:49:47 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,6 @@ class Request
 		void initialize();
 		void parseRequest(std::string &msg);
 		void getFileContent(const std::string &filename);
-		void onMessageReceived(Server &server);
+		void onMessageReceived(int client_fd);
 		int	checkRequest(std::string &msg);
 };

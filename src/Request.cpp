@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 13:45:58 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 17:12:18 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,9 @@ void	Request::getFileContent(const std::string &filename)
 	}
 }
 
-void	Request::onMessageReceived(Server &server)
+void	Request::onMessageReceived(int client_fd)
 {
-	(void)server;
+	(void)client_fd;
 	if (is_bad_request)
 	{
 		_headers["Status"] = "400 Bad Request";
@@ -167,7 +167,7 @@ int	Request::checkRequest(std::string &msg)
 	std::istringstream lineStream(line);
 	std::vector<std::string> parsedLine((std::istream_iterator<std::string>(lineStream)), std::istream_iterator<std::string>());
 
-	if (parsedLine.size() != 3 || parsedLine[2] != "HTTP/1.1\r")
+	if (parsedLine.size() != 3 || parsedLine[2] != "HTTP/1.1")
 		return -1;
 	return 0;
 }
@@ -212,4 +212,5 @@ void	Request::parseRequest(std::string &msg)
 		_body = body;
 	}
 	initialize();
+	
 }
