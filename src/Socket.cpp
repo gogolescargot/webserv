@@ -6,11 +6,8 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2024/06/25 17:12:45 by lunagda          ###   ########.fr       */
-=======
 /*   Updated: 2024/06/25 17:31:22 by ggalon           ###   ########.fr       */
->>>>>>> origin/ggalon
+
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,23 +86,6 @@ void Socket::launchSocket(Server server)
 
         for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ++it)
 		{
-<<<<<<< HEAD
-			std::cerr << "Error: accept failed" << std::endl;
-			exit(EXIT_FAILURE);
-		}
-		
-		// Read the request from the client
-		char buffer[1024] = { 0 }; 
-		recv(_client_fd, buffer, sizeof(buffer), 0); 
-		Request req;
-		std::string tmp(buffer);
-		std::cout << tmp << std::endl;
-		req.parseRequest(tmp);
-		req.onMessageReceived(_client_fd, server);
-	}
-	close(_server_fd);
-	}
-=======
             int client_fd = *it;
             FD_SET(client_fd, &read_fds);
             if (client_fd > max_sd)
@@ -163,4 +143,3 @@ void Socket::launchSocket(Server server)
 
     close(_server_fd);
 }
->>>>>>> origin/ggalon

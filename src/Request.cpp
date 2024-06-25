@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 18:16:57 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 21:42:39 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,12 +103,10 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		std::string rootPath = server.getRootPath();
 		std::vector<std::string> indexes = server.getIndexes();
 		std::vector<Location *> locations = server.getLocations();
-		Location *location = NULL;
 		for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
 			if (_filename == (*it)->getPath())
 			{
-				location = *it;
 				std::vector<std::string> indexes = (*it)->getIndexes();
 				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 				{
