@@ -18,8 +18,8 @@ Server::Server() : _maxBodySize(0)
 
 Server::~Server()
 {
-	// for (std::vector<Location *>::iterator it = _locations.begin(); it != _locations.end(); it++)
-	// 	delete *it;
+	for (std::vector<Location *>::iterator it = _locations.begin(); it != _locations.end(); it++)
+		delete *it;
 }
 
 void Server::setHostName(const std::string &hostname)

@@ -34,12 +34,12 @@ class ConfigFile
 		int open();
 		int close();
 		int token();
-		int parse(std::map<std::string, Server>&);
+		int parse(std::vector<Server*>&);
 
 		std::string word(size_t &);
 		int comment(size_t &);
 
-		int createServer(size_t &, std::map<std::string, Server>&);
+		int createServer(size_t &, std::vector<Server*>&);
 		int checkToken(const size_t&, const std::string&);
 		int checkTokenFunction(const size_t &, int (*func)(int));
 		int isKeyword(size_t&);

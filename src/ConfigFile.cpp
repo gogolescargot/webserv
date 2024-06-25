@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/25 16:39:44 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 23:31:22 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,13 +112,8 @@ int ConfigFile::comment(size_t &i)
 	return (0);
 }
 
-int ConfigFile::parse(std::map<std::string, Server> &serverList)
+int ConfigFile::parse(std::vector<Server *> &serverList)
 {
-	//for (size_t i = 0; i < _tokens.size(); i++)
-	//{
-	//	std::cout << _tokens[i] << std::endl;
-	//}
-	
 	for (size_t i = 0; i < _tokens.size(); i++)
 	{
 		if (_tokens[i] == "server")
@@ -567,6 +562,8 @@ int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
 int ConfigFile::getLocation(size_t &i, Server &server)
 {
 	Location *location = new Location(&server);
+	
+	server.addLocation(location);
 
 	i++;
 	
@@ -609,15 +606,17 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 		}
 	}
 
-	server.addLocation(location);
 	i++;
 	
 	return (0);
 }
 
-int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverList)
+int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 {
-	Server server;
+	Server *server = new Server;
+
+	serverList.push_back(server);
+
 	size_t bracket = 0;
 
 	i++;
@@ -632,7 +631,6 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 
 	while (bracket > 0 && i < _tokens.size())
 	{
-		std::cout << _tokens[i] << std::endl;
 		if (checkToken(i, "{"))
 		{
 			bracket++;
@@ -645,21 +643,21 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 		{
 			if (isKeyword(i) == 1)
 			{
-				if (getArgument(i, server))
+				if (getArgument(i, *server))
 				{
 					return (1);
 				}
 			}
 			else if (isKeyword(i) == 2)
 			{
-				if (getMultipleArgument(i, server))
+				if (getMultipleArgument(i, *server))
 				{
 					return (1);
 				}
 			}
 			else if (isKeyword(i) == 3)
 			{
-				if (getLocation(i, server))
+				if (getLocation(i, *server))
 				{
 					return (1);
 				}
@@ -677,6 +675,5 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 		throw std::runtime_error("Formatting error: Bracket error");
 	}
 
-	serverList.insert(std::make_pair(server.getHostName(), server));
 	return (0);
 }

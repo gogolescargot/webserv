@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:31:22 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 23:35:17 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ Socket::~Socket()
 {
 }
 
-Socket::Socket(std::map<std::string, Server> serverList)
+Socket::Socket(std::vector<Server*> serverList)
 {
-	for (std::map<std::string, Server>::iterator it = serverList.begin(); it != serverList.end(); it++)
+	for (size_t i = 0; i < serverList.size(); i++)
 	{
-		std::cout << "Listening on: " << it->second.getPort() << std::endl;
-		launchSocket(it->second);
+		// std::cout << "Listening on: " << *it->second.getPort() << std::endl;
+		launchSocket(*serverList[i]);
 	}
 }
 

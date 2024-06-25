@@ -27,7 +27,8 @@
 # include "Socket.hpp"
 # include "Request.hpp"
 # include "Printer.hpp"
+# include "ServerList.hpp"
 
 void error(const std::string& message);
-int config(const char *filepath, std::map<std::string, Server> &serverList);
+int config(const char *filepath, std::vector<Server*> &serverList);
 int isSeparator(int c);
