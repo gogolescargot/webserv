@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 16:08:57 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 17:05:54 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,20 +104,21 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		std::string rootPath = server.getRootPath();
 		std::vector<std::string> indexes = server.getIndexes();
 		std::vector<Location *> locations = server.getLocations();
-		for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
+		for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
-			if (std::ifstream((rootPath + *it).c_str()))
+			if (_filename == (*it)->getPath())
 			{
-				if (_filename == "/")
+				std::vector<std::string> indexes = (*it)->getIndexes();
+				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 				{
-					_filename = *it;
-					std::cout << _filename << std::endl;
-					break ;
+					if (std::ifstream((rootPath + *it).c_str()))
+					{
+						_filename = *it;
+						break ;
+					}
 				}
 			}
 		}
-		//if (_filename == "/")
-		//	_filename = "/index.html";
 		if (_method != "GET" && _method != "POST" && _method != "DELETE")
 		{
 			_headers["Status"] = "405 Method Not Allowed";
@@ -126,29 +127,23 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		}
 		else if (_method == "GET")
 		{
-			for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
-			{
-				if ((*it)->getPath() == _filename)
-				{
-					_headers["Content-Type"] = "text/html";
-					_headers["Status"] = "200 OK";
-					std::cout << rootPath << std::endl;
-					getFileContent(rootPath + _filename, server);
-				}
-				else
-				{
-					_headers["Status"] = "200 OK";
-					size_t fileExtensionIndex = _filename.rfind(".");
-					if (fileExtensionIndex == std::string::npos)
-						_headers["Content-Type"] = _mimeTypes[".html"];
-					else
-						_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
-					if (std::ifstream((rootPath + _filename).c_str()))
-						getFileContent(rootPath + _filename, server);
-					else
-						getFileContent(server.getErrorPage(404), server);
-				}
-			}
+			_headers["Content-Type"] = "text/html";
+			_headers["Status"] = "200 OK";
+			getFileContent(rootPath + _filename, server);
+			//}
+			//else
+			//{
+			//	_headers["Status"] = "200 OK";
+			//	size_t fileExtensionIndex = _filename.rfind(".");
+			//	if (fileExtensionIndex == std::string::npos)
+			//		_headers["Content-Type"] = _mimeTypes[".html"];
+			//	else
+			//		_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
+			//	if (std::ifstream((rootPath + _filename).c_str()))
+			//		getFileContent(rootPath + _filename, server);
+			//	else
+			//		getFileContent(server.getErrorPage(404), server);
+			//}
 			//if (_filename == "/")
 			//{
 			//	_headers["Content-Type"] = "text/html";
