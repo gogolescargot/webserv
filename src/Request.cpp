@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 20:06:07 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 16:08:57 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ void	Request::initialize()
 	_headers["Cache-Control"] = "no-cache, private";
 }
 
-void	Request::getFileContent(const std::string &filename)
+void	Request::getFileContent(const std::string &filename, Server server)
 {
-	std::ifstream file(("./wwwroot" + filename).c_str());
+	std::ifstream file(filename.c_str());
 	if (file.good())
 	{
 		std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
@@ -85,48 +85,84 @@ void	Request::getFileContent(const std::string &filename)
 	}
 	else
 	{
-		getFileContent("/404.html");
+		getFileContent(server.getErrorPage(404), server);
 		_headers["Status"] = "404 Not Found";
 		
 	}
 }
 
-void	Request::onMessageReceived(int client_fd)
+void	Request::onMessageReceived(int client_fd, Server server)
 {
-	(void)client_fd;
 	if (is_bad_request)
 	{
 		_headers["Status"] = "400 Bad Request";
 		_headers["Content-Type"] = "text/html";
-		getFileContent("/400.html");
+		getFileContent(server.getErrorPage(400), server);
 	}
 	else
 	{
-		if (_method != "GET" || _method != "POST" || _method != "DELETE")
+		std::string rootPath = server.getRootPath();
+		std::vector<std::string> indexes = server.getIndexes();
+		std::vector<Location *> locations = server.getLocations();
+		for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 		{
-			_headers["Content-Length"] = "0";
+			if (std::ifstream((rootPath + *it).c_str()))
+			{
+				if (_filename == "/")
+				{
+					_filename = *it;
+					std::cout << _filename << std::endl;
+					break ;
+				}
+			}
+		}
+		//if (_filename == "/")
+		//	_filename = "/index.html";
+		if (_method != "GET" && _method != "POST" && _method != "DELETE")
+		{
 			_headers["Status"] = "405 Method Not Allowed";
 			_headers["Content-Type"] = "text/html";
-			getFileContent("/405.html");
+			getFileContent(server.getErrorPage(405), server);
 		}
-		if (_method == "GET")
+		else if (_method == "GET")
 		{
-			if (_filename == "/")
+			for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
 			{
-				_headers["Content-Type"] = "text/html";
-				_headers["Status"] = "200 OK";
-				getFileContent("/index.html");
-			}
-			else
-			{
-				_headers["Status"] = "200 OK";
-				size_t fileExtensionIndex = _filename.rfind(".");
-				if (fileExtensionIndex == std::string::npos)
-					_headers["Content-Type"] = _mimeTypes[".html"];
+				if ((*it)->getPath() == _filename)
+				{
+					_headers["Content-Type"] = "text/html";
+					_headers["Status"] = "200 OK";
+					std::cout << rootPath << std::endl;
+					getFileContent(rootPath + _filename, server);
+				}
 				else
-					_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
-				getFileContent(_filename);
+				{
+					_headers["Status"] = "200 OK";
+					size_t fileExtensionIndex = _filename.rfind(".");
+					if (fileExtensionIndex == std::string::npos)
+						_headers["Content-Type"] = _mimeTypes[".html"];
+					else
+						_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
+					if (std::ifstream((rootPath + _filename).c_str()))
+						getFileContent(rootPath + _filename, server);
+					else
+						getFileContent(server.getErrorPage(404), server);
+				}
 			}
+			//if (_filename == "/")
+			//{
+			//	_headers["Content-Type"] = "text/html";
+			//	_headers["Status"] = "200 OK";
+			//	for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
+			//	{
+			//		if (std::ifstream(rootPath + *it))
+			//		{
+			//			getFileContent(rootPath + *it);
+			//			break ;
+			//		}
+			//	}
+			//}
+			
 		}
 		else if (_method == "POST")
 		{
@@ -137,13 +173,13 @@ void	Request::onMessageReceived(int client_fd)
 				file.close();
 				_headers["Status"] = "201 Created";
 				_headers["Content-Type"] = "text/html";
-				getFileContent("/index.html");
+				getFileContent(rootPath + "/index.html", server);
 			}
 			else
 			{
 				_headers["Status"] = "502 Bad Gateway";
 				_headers["Content-Type"] = "text/html";
-				getFileContent("/502.html");
+				getFileContent(server.getErrorPage(502), server);
 			}
 		}
 		else if (_method == "DELETE")
@@ -152,13 +188,13 @@ void	Request::onMessageReceived(int client_fd)
 			{
 				_headers["Status"] = "404 Not Found";
 				_headers["Content-Type"] = "text/html";
-				getFileContent("/404.html");
+				getFileContent(server.getErrorPage(404), server);
 			}
 			else
 			{
 				_headers["Status"] = "204 No Content";
 				_headers["Content-Type"] = "text/html";
-				getFileContent("/204.html");
+				getFileContent(server.getErrorPage(204), server);
 			}
 		}
 	}
@@ -170,7 +206,7 @@ void	Request::onMessageReceived(int client_fd)
 	}
 	response += CRLF + _content;
 	std::cout << response << std::endl;
-	//sendToClient(socket, response.c_str(), response.size() + 1);
+	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
 
 int	Request::checkRequest(std::string &msg)

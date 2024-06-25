@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 15:32:44 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 14:34:02 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class Server
 		size_t getMaxBodySize() const;
 		const std::string &getHostName() const;
 		const std::vector<Location *> &getLocations() const;
-		const std::map<int, const std::string> getErrorPages(const std::string &errorPages);
+		const std::string &getErrorPage(int ErrorCode) const;
 
 		void setRootPath(std::istringstream &iss);
 		void addIndex(std::istringstream &iss);

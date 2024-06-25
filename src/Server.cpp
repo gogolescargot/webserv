@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 15:44:12 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 14:50:02 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,11 @@ const std::string &Server::getHostName() const
 const std::vector<Location *> &Server::getLocations() const
 {
 	return _locations;
+}
+
+const std::string &Server::getErrorPage(int ErrorCode) const
+{
+	return _errorPages.find(ErrorCode)->second;
 }
 
 // void Server::displayServer()
