@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:14 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 15:50:39 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 13:19:07 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int main(int argc, const char *argv[])
 
 	if (argc != 2)
 	{
-		error("Wrong argument number");
+		error("Usage: ./webserv <config_file>");
 		return (1);
 	}
 	try 

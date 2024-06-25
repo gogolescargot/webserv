@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:56 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 15:56:53 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 14:29:35 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ class Socket {
 		Socket();
 		~Socket();
 		Socket(std::map<std::string, Server>);
-		void launchSocket(int);
+		void launchSocket(Server);
 		int const &getServerFD() const;
 		int const &getClientFD() const;
 	private:

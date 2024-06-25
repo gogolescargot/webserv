@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 21:00:48 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/25 14:48:21 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class Request
 		~Request();
 		void initialize();
 		void parseRequest(std::string &msg);
-		void getFileContent(const std::string &filename);
-		void onMessageReceived(int client_fd);
+		void getFileContent(const std::string &filename, Server server);
+		void onMessageReceived(int client_fd, Server server);
 		int	checkRequest(std::string &msg);
 };
