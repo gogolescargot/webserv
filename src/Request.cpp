@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:12:58 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 18:16:57 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ void	Request::getFileContent(const std::string &filename, Server server)
 	{
 		getFileContent(server.getErrorPage(404), server);
 		_headers["Status"] = "404 Not Found";
-		
 	}
 }
 
@@ -104,10 +103,12 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		std::string rootPath = server.getRootPath();
 		std::vector<std::string> indexes = server.getIndexes();
 		std::vector<Location *> locations = server.getLocations();
+		Location *location = NULL;
 		for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
 			if (_filename == (*it)->getPath())
 			{
+				location = *it;
 				std::vector<std::string> indexes = (*it)->getIndexes();
 				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 				{
@@ -161,14 +162,25 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		}
 		else if (_method == "POST")
 		{
-			std::ofstream file(("files/" + _filename).c_str());
+			size_t filenameStart = _body.find("filename=\"");
+			std::string filename;
+			filenameStart += 10;
+			size_t filenameEnd = _body.find("\"", filenameStart);
+			filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+
+			size_t contentTypeStart = _body.find(CRLF CRLF);
+			contentTypeStart += 4;
+			std::string body = _body.substr(contentTypeStart);
+			if (body.find_last_of("---------") != std::string::npos)
+				body.erase(body.find_first_of("---------"));
+			std::ofstream file((server.getUploadDir() + filename).c_str());
 			if (file && file.is_open())
 			{
-				file << _body;
+				file << body;
 				file.close();
 				_headers["Status"] = "201 Created";
 				_headers["Content-Type"] = "text/html";
-				getFileContent(rootPath + "/index.html", server);
+				getFileContent(rootPath + _filename, server);
 			}
 			else
 			{
@@ -179,7 +191,7 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		}
 		else if (_method == "DELETE")
 		{
-			if (remove(("files/" + _filename).c_str()) != 0)
+			if (remove((server.getUploadDir() + _filename).c_str()) != 0)
 			{
 				_headers["Status"] = "404 Not Found";
 				_headers["Content-Type"] = "text/html";
@@ -200,7 +212,7 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		response += it->first + ": " + it->second + CRLF;
 	}
 	response += CRLF + _content;
-	//std::cout << response << std::endl;
+	std::cout << response << std::endl;
 	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
 

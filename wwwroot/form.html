@@ -5,10 +5,14 @@
 </head>
 <body>
 	<h1>Welcome to my first form</h1>
-	<form action="http://localhost:8000/form.php" method="post" enctype="multipart/form-data"></form>
-		<label for="document">Document:</label>
-		<input type="file" id="document" name="document" />
-		<button type="submit">Submit</button>
-	</form>
+	<form method="post" enctype="multipart/form-data">
+        <div>
+            <label for="file">Choose file to upload</label>
+            <input type="file" id="file" name="file" multiple />
+        </div>
+        <div>
+            <button>Submit</button>
+        </div>
+    </form>
 </body>
 </html>
