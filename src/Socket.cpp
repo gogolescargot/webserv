@@ -6,12 +6,11 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/24 18:13:41 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/24 22:42:26 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Socket.hpp"
-#include "Request.hpp"
+#include "webserv.hpp"
 
 Socket::Socket()
 {
@@ -49,6 +48,7 @@ void Socket::launchSocket(int port)
 		std::cerr << "Error: socket creation failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	
 	// Set the socket options
 	int opt = 1;
 	if (setsockopt(_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
@@ -56,22 +56,26 @@ void Socket::launchSocket(int port)
 		std::cerr << "Error: setsockopt failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	
 	// Bind the socket
 	struct sockaddr_in address;
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(port);
+
 	if (bind(_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
 	{
 		std::cerr << "Error: bind failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+
 	// Listen for incoming connections
 	if (listen(_server_fd, 3) < 0)
 	{
 		std::cerr << "Error: listen failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
+	
 	// Accept incoming connections
 	int addrlen = sizeof(address);
 	if ((_client_fd = accept(_server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
@@ -85,8 +89,10 @@ void Socket::launchSocket(int port)
 	recv(_client_fd, buffer, sizeof(buffer), 0); 
 	Request req;
 	std::string tmp(buffer);
+	
 	// std::cout << tmp << std::endl;
 	req.parseRequest(tmp);
 	req.onMessageReceived(_client_fd);
+
 	close(_server_fd);
 }

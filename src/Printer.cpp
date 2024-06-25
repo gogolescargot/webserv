@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Printer.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 14:54:25 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/19 15:02:12 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 16:07:28 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Printer.hpp"
+#include "webserv.hpp"
 
 Printer::Printer()
 {
+	
 }
 
 void Printer::printLocation(const Server *server)

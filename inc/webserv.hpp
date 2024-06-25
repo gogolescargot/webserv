@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:27 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 13:38:43 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/24 22:37:10 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,14 @@
 # include <vector>
 # include <map>
 # include <stdlib.h>
+# include <sys/epoll.h>
 
 # include "ConfigFile.hpp"
 # include "Location.hpp"
 # include "Server.hpp"
+# include "Socket.hpp"
+# include "Request.hpp"
+# include "Printer.hpp"
 
 void error(const std::string& message);
 int config(const char *filepath, std::map<std::string, Server> &serverList);
