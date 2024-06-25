@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/25 15:01:36 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 16:39:44 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -514,7 +514,7 @@ int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
 
 int ConfigFile::getLocation(size_t &i, Server &server)
 {
-	Location location(&server);
+	Location *location = new Location(&server);
 
 	i++;
 	
@@ -524,7 +524,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 	}
 
 	std::istringstream path(_tokens[i]); 
-	location.setPath(path);
+	location->setPath(path);
 	i++;
 
 	if (!checkToken(i, "{"))
@@ -538,14 +538,14 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 	{
 		if (isKeyword(i) == 1)
 		{
-			if (getArgumentLocation(i, location))
+			if (getArgumentLocation(i, *location))
 			{
 				return (1);
 			}
 		}
 		else if (isKeyword(i) == 2)
 		{
-			if (getMultipleArgumentLocation(i, location))
+			if (getMultipleArgumentLocation(i, *location))
 			{
 				return (1);
 			}
@@ -557,7 +557,7 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 		}
 	}
 
-	server.addLocation(&location);
+	server.addLocation(location);
 	i++;
 	
 	return (0);

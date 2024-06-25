@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 16:09:24 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 16:53:00 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void Socket::launchSocket(Server server)
 {
 	std::vector<Location *> locations = server.getLocations();
 
-	//std::cout << locations.front()->getPath() << std::endl;
+	std::cout << locations.front()->getPath() << std::endl;
 	// Create a socket
 	_server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_server_fd == -1)
@@ -64,7 +64,7 @@ void Socket::launchSocket(Server server)
 	struct sockaddr_in address;
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(port);
+	address.sin_port = htons(server.getPort());
 	if (bind(_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
 	{
 		std::cerr << "Error: bind failed" << std::endl;
@@ -93,6 +93,6 @@ void Socket::launchSocket(Server server)
 	std::string tmp(buffer);
 	// std::cout << tmp << std::endl;
 	req.parseRequest(tmp);
-	req.onMessageReceived(_client_fd);
+	req.onMessageReceived(_client_fd, server);
 	close(_server_fd);
 	}
