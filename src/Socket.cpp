@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:10:16 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 17:31:22 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,21 +41,18 @@ std::vector<int> const &Socket::getClientFD() const
 
 void Socket::launchSocket(Server server)
 {
- std::vector<Location *> locations = server.getLocations();
-    std::cout << locations.front()->getPath() << std::endl;
-
     // Create a socket
     _server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_server_fd == -1) {
-        std::cerr << "Error: socket creation failed" << std::endl;
-        exit(EXIT_FAILURE);
+    if (_server_fd == -1)
+	{
+		throw std::runtime_error("Error: socket creation failed");
     }
 
     // Set the socket options
     int opt = 1;
-    if (setsockopt(_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        std::cerr << "Error: setsockopt failed" << std::endl;
-        exit(EXIT_FAILURE);
+    if (setsockopt(_server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
+	{
+		throw std::runtime_error("Error: setsockopt failed");
     }
 
     // Set the socket to non-blocking mode
@@ -66,15 +63,15 @@ void Socket::launchSocket(Server server)
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(server.getPort());
-    if (bind(_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        std::cerr << "Error: bind failed" << std::endl;
-        exit(EXIT_FAILURE);
+    if (bind(_server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
+	{
+		throw std::runtime_error("Error: bind failed");
     }
 
     // Listen for incoming connections
-    if (listen(_server_fd, 3) < 0) {
-        std::cerr << "Error: listen failed" << std::endl;
-        exit(EXIT_FAILURE);
+    if (listen(_server_fd, 3) < 0)
+	{
+		throw std::runtime_error("Error: listen failed");
     }
 
     // Set up the select call
@@ -86,19 +83,21 @@ void Socket::launchSocket(Server server)
         FD_ZERO(&read_fds);
         FD_SET(_server_fd, &read_fds);
 
-        for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ++it) {
+        for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ++it)
+		{
             int client_fd = *it;
             FD_SET(client_fd, &read_fds);
-            if (client_fd > max_sd) {
+            if (client_fd > max_sd)
+			{
                 max_sd = client_fd;
             }
         }
 
         int activity = select(max_sd + 1, &read_fds, NULL, NULL, NULL);
 
-        if (activity < 0) {
-            std::cerr << "Error: select failed" << std::endl;
-            exit(EXIT_FAILURE);
+        if (activity < 0)
+		{
+			throw std::runtime_error("Error: select failed");
         }
 
         // Check for new incoming connections
@@ -107,9 +106,9 @@ void Socket::launchSocket(Server server)
             struct sockaddr_in address;
             socklen_t addrlen = sizeof(address);
 
-            if ((new_socket = accept(_server_fd, (struct sockaddr *)&address, &addrlen)) < 0) {
-                std::cerr << "Error: accept failed" << std::endl;
-                exit(EXIT_FAILURE);
+            if ((new_socket = accept(_server_fd, (struct sockaddr *)&address, &addrlen)) < 0)
+			{
+				throw std::runtime_error("Error: accept failed");
             }
 
             fcntl(new_socket, F_SETFL, O_NONBLOCK); // Set the new socket to non-blocking mode
