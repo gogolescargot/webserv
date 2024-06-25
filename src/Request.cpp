@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:05:54 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 17:12:58 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		response += it->first + ": " + it->second + CRLF;
 	}
 	response += CRLF + _content;
-	std::cout << response << std::endl;
+	//std::cout << response << std::endl;
 	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
 

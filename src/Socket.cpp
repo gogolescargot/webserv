@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:03:51 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/25 17:12:45 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void Socket::launchSocket(Server server)
 		recv(_client_fd, buffer, sizeof(buffer), 0); 
 		Request req;
 		std::string tmp(buffer);
-		// std::cout << tmp << std::endl;
+		std::cout << tmp << std::endl;
 		req.parseRequest(tmp);
 		req.onMessageReceived(_client_fd, server);
 	}
