@@ -162,15 +162,15 @@ int ConfigFile::checkTokenFunction(const size_t &i, int (*func)(int))
 
 int ConfigFile::isKeyword(size_t &i)
 {
-	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "allow_methods", "allow_methods", "upload_dir"};
-	const std::string keyword_multiple[] = {"error_page", "return", "index", "cgi"};
+	const std::string keyword_single[] = {"hostname", "root", "client_max_body_size", "server_name", "listen", "autoindex", "upload_dir"};
+	const std::string keyword_multiple[] = {"allow_methods", "error_page", "return", "index", "cgi"};
 
 	if (i >= _tokens.size())
 	{
 		return (0);
 	}
 
-	for (size_t j = 0; j < 9; j++)
+	for (size_t j = 0; j < 7; j++)
 	{
 		if (_tokens[i] == keyword_single[j])
 		{
@@ -178,7 +178,7 @@ int ConfigFile::isKeyword(size_t &i)
 		}
 	}
 
-	for (size_t j = 0; j < 4; j++)
+	for (size_t j = 0; j < 5; j++)
 	{
 		if (_tokens[i] == keyword_multiple[j])
 		{
@@ -218,10 +218,6 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 	else if (checkToken(key, "autoindex"))
 	{
 		server.setAutoIndex(iss);
-	}
-	else if (checkToken(key, "allow_methods"))
-	{
-		server.setAllowMethods(iss);
 	}
 	else if (checkToken(key, "root"))
 	{
@@ -339,6 +335,52 @@ int ConfigFile::checkRedirect(size_t i)
 	return (0);
 }
 
+int ConfigFile::checkMethods(size_t &i, Server &server)
+{
+	size_t j = 0;
+
+	while (!checkToken(i, ";"))
+	{
+		std::istringstream iss(_tokens[i]);
+		server.setAllowMethods(iss);
+		j++;
+		i++;
+	}
+
+
+	if (j == 0 && checkToken(i, ";"))
+	{
+		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	i++;
+	
+	return (0);
+}
+
+int ConfigFile::checkMethodsLocation(size_t &i, Location &location)
+{
+	size_t j = 0;
+
+	while (!checkToken(i, ";"))
+	{
+		std::istringstream iss(_tokens[i]);
+		location.setAllowMethods(iss);
+		j++;
+		i++;
+	}
+
+
+	if (j == 0 && checkToken(i, ";"))
+	{
+		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	i++;
+	
+	return (0);
+}
+
 int ConfigFile::checkCgi(size_t i)
 {
 	if (checkTokenFunction(i, isSeparator))
@@ -411,6 +453,13 @@ int ConfigFile::getMultipleArgument(size_t &i, Server &server)
 
 		i += 3;
 	}
+	else if (checkToken(key, "allow_methods"))
+	{
+		if (checkMethods(i, server))
+		{
+			return (1);
+		}
+	}
 	
 	return (0);
 }
@@ -431,10 +480,6 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 	if (checkToken(key, "autoindex"))
 	{
 		location.setAutoIndex(iss);
-	}
-	else if (checkToken(key, "allow_methods"))
-	{
-		location.setAllowMethods(iss);
 	}
 	else if (checkToken(key, "root"))
 	{
@@ -508,6 +553,13 @@ int ConfigFile::getMultipleArgumentLocation(size_t &i, Location &location)
 
 		i += 3;
 	}
+	else if (checkToken(key, "allow_methods"))
+	{
+		if (checkMethodsLocation(i, location))
+		{
+			return (1);
+		}
+	}
 	
 	return (0);
 }
@@ -580,6 +632,7 @@ int ConfigFile::createServer(size_t &i, std::map<std::string, Server> &serverLis
 
 	while (bracket > 0 && i < _tokens.size())
 	{
+		std::cout << _tokens[i] << std::endl;
 		if (checkToken(i, "{"))
 		{
 			bracket++;
