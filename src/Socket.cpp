@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 16:53:00 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 17:03:51 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,6 @@ int const &Socket::getClientFD() const
 
 void Socket::launchSocket(Server server)
 {
-	std::vector<Location *> locations = server.getLocations();
-
-	std::cout << locations.front()->getPath() << std::endl;
 	// Create a socket
 	_server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_server_fd == -1)
@@ -80,19 +77,22 @@ void Socket::launchSocket(Server server)
 	
 	// Accept incoming connections
 	int addrlen = sizeof(address);
-	if ((_client_fd = accept(_server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+	while (1)
 	{
-		std::cerr << "Error: accept failed" << std::endl;
-		exit(EXIT_FAILURE);
+		if ((_client_fd = accept(_server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+		{
+			std::cerr << "Error: accept failed" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		
+		// Read the request from the client
+		char buffer[1024] = { 0 }; 
+		recv(_client_fd, buffer, sizeof(buffer), 0); 
+		Request req;
+		std::string tmp(buffer);
+		// std::cout << tmp << std::endl;
+		req.parseRequest(tmp);
+		req.onMessageReceived(_client_fd, server);
 	}
-	
-	// Read the request from the client
-	char buffer[1024] = { 0 }; 
-	recv(_client_fd, buffer, sizeof(buffer), 0); 
-	Request req;
-	std::string tmp(buffer);
-	// std::cout << tmp << std::endl;
-	req.parseRequest(tmp);
-	req.onMessageReceived(_client_fd, server);
 	close(_server_fd);
 	}
