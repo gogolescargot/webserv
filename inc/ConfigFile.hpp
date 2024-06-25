@@ -53,9 +53,12 @@ class ConfigFile
 		
 		int checkCgi(size_t i);
 		int checkRedirect(size_t i);
+		int checkMethods(size_t &i, Server&);
 
 		int getLocation(size_t &i, Server &server);
 		int getArgumentLocation(size_t &i, Location &location);
 		int getMultipleArgumentLocation(size_t &i, Location &location);
+		int checkMethodsLocation(size_t &i, Location &location);
+
 
 };
