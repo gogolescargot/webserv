@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 23:30:40 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/25 23:30:43 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 00:02:20 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ ServerList::ServerList()
 
 ServerList::~ServerList()
 {
+	std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 	for (size_t i = 0; i < _serverList.size(); i++)
 	{
 		delete _serverList[i];

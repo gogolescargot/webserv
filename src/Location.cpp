@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 16:07:30 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 00:08:25 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Location::Location(const Location &copy)
 
 Location::~Location()
 {
+	std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCc" << std::endl;
 }
 
 Location &Location::operator=(const Location &copy)

@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:56 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 23:34:30 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 00:09:09 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class Socket {
 		Socket();
 		~Socket();
 		Socket(std::vector<Server*>);
-		void launchSocket(Server);
+		void launchSocket(const Server&);
 		int const &getServerFD() const;
 		std::vector<int> const &getClientFD() const;
 	private:

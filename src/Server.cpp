@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 14:50:02 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 00:02:32 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ Server::Server() : _maxBodySize(0)
 
 Server::~Server()
 {
+		std::cout << "bBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
+
 	for (std::vector<Location *>::iterator it = _locations.begin(); it != _locations.end(); it++)
 		delete *it;
 }
@@ -68,7 +70,10 @@ const std::vector<Location *> &Server::getLocations() const
 
 const std::string &Server::getErrorPage(int ErrorCode) const
 {
-	return _errorPages.find(ErrorCode)->second;
+	if (_errorPages.find(ErrorCode) != _errorPages.end())
+		return _errorPages.find(ErrorCode)->second;
+	else 
+		return _errorPages.find(404)->second;
 }
 
 // void Server::displayServer()

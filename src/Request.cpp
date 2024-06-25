@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 17:05:54 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 00:16:27 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	Request::initialize()
 	_headers["Cache-Control"] = "no-cache, private";
 }
 
-void	Request::getFileContent(const std::string &filename, Server server)
+void	Request::getFileContent(const std::string &filename, const Server &server)
 {
 	std::ifstream file(filename.c_str());
 	if (file.good())
@@ -87,11 +87,10 @@ void	Request::getFileContent(const std::string &filename, Server server)
 	{
 		getFileContent(server.getErrorPage(404), server);
 		_headers["Status"] = "404 Not Found";
-		
 	}
 }
 
-void	Request::onMessageReceived(int client_fd, Server server)
+void	Request::onMessageReceived(int client_fd, const Server &server)
 {
 	if (is_bad_request)
 	{
@@ -161,14 +160,25 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		}
 		else if (_method == "POST")
 		{
-			std::ofstream file(("files/" + _filename).c_str());
+			size_t filenameStart = _body.find("filename=\"");
+			std::string filename;
+			filenameStart += 10;
+			size_t filenameEnd = _body.find("\"", filenameStart);
+			filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+
+			size_t contentTypeStart = _body.find(CRLF CRLF);
+			contentTypeStart += 4;
+			std::string body = _body.substr(contentTypeStart);
+			if (body.find_last_of("---------") != std::string::npos)
+				body.erase(body.find_first_of("---------"));
+			std::ofstream file((server.getUploadDir() + filename).c_str());
 			if (file && file.is_open())
 			{
-				file << _body;
+				file << body;
 				file.close();
 				_headers["Status"] = "201 Created";
 				_headers["Content-Type"] = "text/html";
-				getFileContent(rootPath + "/index.html", server);
+				getFileContent(rootPath + _filename, server);
 			}
 			else
 			{
@@ -179,7 +189,7 @@ void	Request::onMessageReceived(int client_fd, Server server)
 		}
 		else if (_method == "DELETE")
 		{
-			if (remove(("files/" + _filename).c_str()) != 0)
+			if (remove((server.getUploadDir() + _filename).c_str()) != 0)
 			{
 				_headers["Status"] = "404 Not Found";
 				_headers["Content-Type"] = "text/html";

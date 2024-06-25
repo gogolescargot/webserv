@@ -6,7 +6,8 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:21 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 23:35:17 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/25 17:31:22 by ggalon           ###   ########.fr       */
+
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +40,7 @@ std::vector<int> const &Socket::getClientFD() const
 	return _client_fds;
 }
 
-void Socket::launchSocket(Server server)
+void Socket::launchSocket(const Server &server)
 {
     // Create a socket
     _server_fd = socket(AF_INET, SOCK_STREAM, 0);
