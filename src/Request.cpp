@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 15:31:09 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 15:43:41 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 					_headers["Status"] = "405 Method Not Allowed";
 					_headers["Content-Type"] = "text/html";
 					getFileContent(server.getErrorPage(405), server);
+					break ;
 				}
 				else if (_method == "GET")
 				{
@@ -145,6 +146,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						_headers["Content-Type"] = "text/html";
 					_headers["Status"] = "200 OK";
 					getFileContent(rootPath + _filename, server);
+					break ;
 				}
 				else if (_method == "POST")
 				{
@@ -169,7 +171,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						_headers["Status"] = "201 Created";
 						_headers["Content-Type"] = "text/html";
 						_headers["Location"] = server.getUploadDir() + filename;
-						getFileContent(rootPath + _path, server);
+						getFileContent(rootPath + _filename, server);
 					}
 					else
 					{
@@ -177,6 +179,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						_headers["Content-Type"] = "text/html";
 						getFileContent(server.getErrorPage(502), server);
 					}
+					break ;
 				}
 				else if (_method == "DELETE")
 				{
@@ -192,6 +195,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						_headers["Content-Type"] = "text/html";
 						getFileContent(server.getErrorPage(204), server);
 					}
+					break ;
 				}
 			}
 			else
