@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/26 15:10:13 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 17:47:42 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -570,6 +570,11 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 
 	std::istringstream path(_tokens[i]); 
 	location->setPath(path);
+
+	if (location->getPath() != "/" && server.getLocations().size() == 1)
+	{
+		throw std::runtime_error("Formatting error: Wrong location order"); 
+	}
 	i++;
 
 	if (!checkToken(i, "{"))
@@ -583,17 +588,11 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 	{
 		if (isKeyword(i) == 1)
 		{
-			if (getArgumentLocation(i, *location))
-			{
-				return (1);
-			}
+			getArgumentLocation(i, *location);
 		}
 		else if (isKeyword(i) == 2)
 		{
-			if (getMultipleArgumentLocation(i, *location))
-			{
-				return (1);
-			}
+			getMultipleArgumentLocation(i, *location);
 		}
 		else
 		{

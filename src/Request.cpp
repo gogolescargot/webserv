@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 17:39:19 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 18:35:13 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,24 +299,25 @@ bool startsWith(const std::string& str1, const std::string& str2) {
     return (std::equal(str2.begin(), str2.end(), str1.begin()));
 }
 
-// int Request::isCgiRequest(const Server &server)
-// {
-// 	std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
-// 	std::string rootPath = server.getRootPath();
-// 	std::vector<Location *> locations = server.getLocations();
-// 	for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
-// 	{
-// 		if (startsWith(_filename, (*it)->getPath()))
-// 		{
-// 			std::map<std::string, std::string> cgi = (*it)->getCGI();
-// 			if (cgi.find(extension) != cgi.end())
-// 			{
-// 				return (1);
-// 			}
-// 		}
-// 	}
-// 	return (0);
-// }
+int Request::isCgiRequest(const Server &server)
+{
+	std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
+	std::string rootPath = server.getRootPath();
+	std::vector<Location *> locations = server.getLocations();
+	for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
+	{
+		std::cout << _path << "," << (*it)->getPath() <<  std::endl;
+		if (startsWith(_path, (*it)->getPath()))
+		{
+			std::map<std::string, std::string> cgi = (*it)->getCGI();
+			if (cgi.find(extension) != cgi.end())
+			{
+				return (1);
+			}
+		}
+	}
+	return (0);
+}
 
 int	Request::checkRequest(std::string &msg)
 {
