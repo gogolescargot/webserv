@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:08:25 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 14:41:21 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ Location::Location(const Location &copy)
 
 Location::~Location()
 {
-	std::cout << "CCCCCCCCCCCCCCCCCCCCCCCCCCCc" << std::endl;
 }
 
 Location &Location::operator=(const Location &copy)
@@ -198,7 +197,7 @@ void Location::setUploadDir(std::istringstream &iss)
 
 	if (!(iss >> uploadDir))
 		throw std::runtime_error("Error: invalid upload directory");
-	if (stat(uploadDir.c_str(), &s) == -1)
+	if (stat((_server->getRootPath() + uploadDir).c_str(), &s) == -1)
 		throw std::runtime_error("Error: invalid path, path does not exist");
 	if (!(s.st_mode && (bool)S_IFDIR))
 		throw std::runtime_error("Error: path is not a directory");

@@ -13,7 +13,7 @@
 
 #include "webserv.hpp"
 
-Socket::Socket()
+Socket::Socket(): _rawRequest("")
 {
 }
 
@@ -25,7 +25,7 @@ Socket::Socket(std::vector<Server*> serverList)
 {
 	for (size_t i = 0; i < serverList.size(); i++)
 	{
-		// std::cout << "Listening on: " << *it->second.getPort() << std::endl;
+		std::cout << "Listening on: " << (*serverList[i]).getPort() << std::endl;
 		launchSocket(*serverList[i]);
 	}
 }
@@ -119,22 +119,38 @@ void Socket::launchSocket(const Server &server)
         // Check for I/O operations on existing clients
         for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ) {
             int client_fd = *it;
-
+			char buffer[1024];
+			memset(buffer, 0, 1024);
+			int 	total_read = 0;
+			bool 	read_done = false;
             if (FD_ISSET(client_fd, &read_fds)) {
-                char buffer[1024] = {0};
-                int valread = recv(client_fd, buffer, sizeof(buffer), 0);
-
-                if (valread == 0) {
-                    // Connection closed by the client
-                    close(client_fd);
-                    it = _client_fds.erase(it);
-                } else {
-                    Request req;
-                    std::string tmp(buffer, valread);
-                    req.parseRequest(tmp);
-                    req.onMessageReceived(client_fd, server);
-                    ++it;
-                }
+				while (!read_done){
+					int valread = recv(client_fd, buffer , sizeof(buffer), 0);
+					if (valread <= 0) {
+						// Connection closed by the client
+						close(client_fd);
+						it = _client_fds.erase(it);
+						break;
+					}
+					total_read += valread;
+					_rawRequest.append(buffer, valread);
+					buffer[valread] = '\0';
+					if (valread > 0)
+					{
+						if (buffer[valread - 1] == '\n' && buffer[valread - 2] == '\r')
+						{
+							read_done = true;
+							//std::cout << "Request received: [" + _rawRequest +"]" << std::endl;
+						}
+					}
+				}
+				if (read_done)
+				{
+					Request req;
+					req.parseRequest(_rawRequest);
+					req.onMessageReceived(client_fd, server);
+					_rawRequest.clear();
+				}
             } else {
                 ++it;
             }

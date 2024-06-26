@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:02:32 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 14:42:48 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ Server::Server() : _maxBodySize(0)
 
 Server::~Server()
 {
-		std::cout << "bBBBBBBBBBBBBBBBBBBBBBBBB" << std::endl;
 
 	for (std::vector<Location *>::iterator it = _locations.begin(); it != _locations.end(); it++)
 		delete *it;
@@ -223,8 +222,11 @@ void Server::setUploadDir(std::istringstream &iss)
 
 	if (!(iss >> uploadDir))
 		throw std::runtime_error("Error: invalid upload directory");
-	if (stat(uploadDir.c_str(), &s) == -1)
+	if (stat((getRootPath() + uploadDir).c_str(), &s) == -1)
+	{
+		std::cout << "_root + uploadDir: " << _root + uploadDir << std::endl;
 		throw std::runtime_error("Error: invalid path, path does not exist");
+	}
 	if (!(s.st_mode && bool(S_IFDIR)))
 		throw std::runtime_error("Error: path is not a directory");
 	_uploadDir = uploadDir;

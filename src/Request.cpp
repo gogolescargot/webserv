@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:16:27 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 14:55:54 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,17 +76,22 @@ void	Request::initialize()
 
 void	Request::getFileContent(const std::string &filename, const Server &server)
 {
-	std::ifstream file(filename.c_str());
-	if (file.good())
+	struct stat fileStat;
+
+	if (stat(filename.c_str(), &fileStat) == 0 && S_ISREG(fileStat.st_mode))
 	{
-		std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-		_content = str;
-		_headers["Content-Length"] = ToString(_content.size());
+		std::ifstream file(filename.c_str());
+		if (file.good())
+		{
+			std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+			_content = str;
+			_headers["Content-Length"] = ToString(_content.size());
+		}
 	}
 	else
 	{
-		getFileContent(server.getErrorPage(404), server);
 		_headers["Status"] = "404 Not Found";
+		getFileContent(server.getErrorPage(404), server);
 	}
 }
 
@@ -126,7 +131,10 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 		}
 		else if (_method == "GET")
 		{
-			_headers["Content-Type"] = "text/html";
+			if (_filename.find_last_of(".") != std::string::npos)
+				_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.find_last_of("."))];
+			else
+				_headers["Content-Type"] = "text/html";
 			_headers["Status"] = "200 OK";
 			getFileContent(rootPath + _filename, server);
 			//}
@@ -171,13 +179,16 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 			std::string body = _body.substr(contentTypeStart);
 			if (body.find_last_of("---------") != std::string::npos)
 				body.erase(body.find_first_of("---------"));
-			std::ofstream file((server.getUploadDir() + filename).c_str());
+			_body.clear();
+			_body = body;
+			std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str());
 			if (file && file.is_open())
 			{
 				file << body;
 				file.close();
 				_headers["Status"] = "201 Created";
 				_headers["Content-Type"] = "text/html";
+				_headers["Location"] = server.getUploadDir() + filename;
 				getFileContent(rootPath + _filename, server);
 			}
 			else
@@ -189,7 +200,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 		}
 		else if (_method == "DELETE")
 		{
-			if (remove((server.getUploadDir() + _filename).c_str()) != 0)
+			if (remove((server.getRootPath() + server.getUploadDir() + _filename).c_str()) != 0)
 			{
 				_headers["Status"] = "404 Not Found";
 				_headers["Content-Type"] = "text/html";
@@ -210,7 +221,9 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 		response += it->first + ": " + it->second + CRLF;
 	}
 	response += CRLF + _content;
-	std::cout << response << std::endl;
+	if (_method == "POST")
+		response += CRLF + _body;
+	//std::cout << response << std::endl;
 	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
 

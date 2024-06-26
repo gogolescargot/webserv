@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:56 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:09:09 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 13:33:14 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,5 @@ class Socket {
 		std::vector<Server> _servers;
 		int _server_fd;
 		std::vector<int> _client_fds;
+		std::string			 _rawRequest;
 };

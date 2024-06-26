@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/26 00:05:44 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 14:15:08 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,6 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 
 	if (!checkToken(i, ";"))
 	{
-		std::cout << "3: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -254,7 +253,6 @@ int ConfigFile::checkErrorPages(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
-		std::cout << "4: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -323,7 +321,6 @@ int ConfigFile::checkRedirect(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
-		std::cout << "5: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -394,7 +391,6 @@ int ConfigFile::checkCgi(size_t i)
 
 	if (!checkToken(i, ";"))
 	{
-		std::cout << "10: " << _tokens[i] << std::endl;
 		throw std::runtime_error("Formatting error: Too many argument");
 	}
 
@@ -486,7 +482,7 @@ int ConfigFile::getArgumentLocation(size_t &i, Location &location)
 	}
 	else if (checkToken(key, "index"))
 	{
-		std::cout << _tokens[i] << std::endl;
+		location.addIndex(iss);
 	}
 
 	i++;
@@ -601,7 +597,6 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 		}
 		else
 		{
-			std::cout << "1: " << _tokens[i] << std::endl;
 			throw std::runtime_error("Formatting error: Wrong keyword");
 		}
 	}
@@ -664,7 +659,6 @@ int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 			}
 			else
 			{
-				std::cout << "2: " << _tokens[i] << std::endl;
 				throw std::runtime_error("Formatting error: Wrong keyword");
 			}
 		}
