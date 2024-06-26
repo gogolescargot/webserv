@@ -145,6 +145,7 @@ void Socket::launchSocket(const Server &server)
 						if (buffer[valread - 1] == '\n' && buffer[valread - 2] == '\r')
 						{
 							read_done = true;
+							std::cout << "Request received: [" + _rawRequest +"]" << std::endl;
 						}
 					}
 				}
