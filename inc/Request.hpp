@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:16:21 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 16:25:43 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Request
 		Request();
 		~Request();
 		void initialize();
+		int isCgiRequest(const Server &server);
 		void parseRequest(std::string &msg);
 		void getFileContent(const std::string &filename, const Server &server);
 		void onMessageReceived(int client_fd, const Server &server);

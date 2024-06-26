@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 14:55:54 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 17:31:38 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ void	Request::getFileContent(const std::string &filename, const Server &server)
 
 void	Request::onMessageReceived(int client_fd, const Server &server)
 {
+	std::cout << _filename << std::endl;
 	if (is_bad_request)
 	{
 		_headers["Status"] = "400 Bad Request";
@@ -223,9 +224,35 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 	response += CRLF + _content;
 	if (_method == "POST")
 		response += CRLF + _body;
-	//std::cout << response << std::endl;
 	send(client_fd, response.c_str(), response.size() + 1, 0);
 }
+
+bool startsWith(const std::string& str1, const std::string& str2) {
+    if (str2.size() > str1.size())
+	{
+        return (false);
+    }
+    return (std::equal(str2.begin(), str2.end(), str1.begin()));
+}
+
+// int Request::isCgiRequest(const Server &server)
+// {
+// 	std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
+// 	std::string rootPath = server.getRootPath();
+// 	std::vector<Location *> locations = server.getLocations();
+// 	for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
+// 	{
+// 		if (startsWith(_filename, (*it)->getPath()))
+// 		{
+// 			std::map<std::string, std::string> cgi = (*it)->getCGI();
+// 			if (cgi.find(extension) != cgi.end())
+// 			{
+// 				return (1);
+// 			}
+// 		}
+// 	}
+// 	return (0);
+// }
 
 int	Request::checkRequest(std::string &msg)
 {

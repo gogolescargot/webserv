@@ -153,6 +153,14 @@ void Socket::launchSocket(const Server &server)
 					Request req;
 					req.parseRequest(_rawRequest);
 					req.onMessageReceived(client_fd, server);
+					// if (req.isCgiRequest(server))
+					// {
+					// 	std::cout << "is cgi" << std::endl;
+					// }
+					// else
+					// {
+					// 	std::cout << "is not cgi" << std::endl;
+					// }
 					_rawRequest.clear();
 				}
 			}
