@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 00:16:21 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/26 15:25:01 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class Request
 	private:
 		std::string _method;
 		std::string _filename;
+		std::string _path;
 		std::string _httpVersion;
 		std::map<std::string, std::string> _headers;
 		std::map<std::string, std::string> _mimeTypes;
@@ -40,6 +41,7 @@ class Request
 		std::string _content;
 		std::string _body;
 		bool is_bad_request;
+		bool _allowed_method;
 	public:
 		Request();
 		~Request();

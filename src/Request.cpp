@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 14:55:54 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 15:31:09 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 Request::Request()
 {
 	is_bad_request = false;
+	_allowed_method = false;
 }
 
 Request::~Request()
@@ -66,7 +67,7 @@ void	Request::initialize()
 	_errorCodes[503] = "Service Unavailable";
 	if (_headers["Content-Type"].empty())
 	{
-		std::string extension = _filename.rfind(".") != std::string::npos ? _filename.substr(_filename.rfind(".") + 1) : "";
+		std::string extension = _path.rfind(".") != std::string::npos ? _path.substr(_path.rfind(".") + 1) : ".txt";
 		_headers["Content-Type"] = _mimeTypes[extension];
 	}
 	_headers["Server"] = "Webserv/1.0";
@@ -110,9 +111,10 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 		std::vector<Location *> locations = server.getLocations();
 		for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
 		{
-			if (_filename == (*it)->getPath())
+			if (_path == (*it)->getPath())
 			{
 				std::vector<std::string> indexes = (*it)->getIndexes();
+				std::vector<std::string> allow_methods = (*it)->getAllowMethods();
 				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 				{
 					if (std::ifstream((rootPath + *it).c_str()))
@@ -121,96 +123,82 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						break ;
 					}
 				}
-			}
-		}
-		if (_method != "GET" && _method != "POST" && _method != "DELETE")
-		{
-			_headers["Status"] = "405 Method Not Allowed";
-			_headers["Content-Type"] = "text/html";
-			getFileContent(server.getErrorPage(405), server);
-		}
-		else if (_method == "GET")
-		{
-			if (_filename.find_last_of(".") != std::string::npos)
-				_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.find_last_of("."))];
-			else
-				_headers["Content-Type"] = "text/html";
-			_headers["Status"] = "200 OK";
-			getFileContent(rootPath + _filename, server);
-			//}
-			//else
-			//{
-			//	_headers["Status"] = "200 OK";
-			//	size_t fileExtensionIndex = _filename.rfind(".");
-			//	if (fileExtensionIndex == std::string::npos)
-			//		_headers["Content-Type"] = _mimeTypes[".html"];
-			//	else
-			//		_headers["Content-Type"] = _mimeTypes[_filename.substr(fileExtensionIndex)];
-			//	if (std::ifstream((rootPath + _filename).c_str()))
-			//		getFileContent(rootPath + _filename, server);
-			//	else
-			//		getFileContent(server.getErrorPage(404), server);
-			//}
-			//if (_filename == "/")
-			//{
-			//	_headers["Content-Type"] = "text/html";
-			//	_headers["Status"] = "200 OK";
-			//	for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
-			//	{
-			//		if (std::ifstream(rootPath + *it))
-			//		{
-			//			getFileContent(rootPath + *it);
-			//			break ;
-			//		}
-			//	}
-			//}
-			
-		}
-		else if (_method == "POST")
-		{
-			size_t filenameStart = _body.find("filename=\"");
-			std::string filename;
-			filenameStart += 10;
-			size_t filenameEnd = _body.find("\"", filenameStart);
-			filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+				for (size_t i = 0; i < allow_methods.size(); i++)
+				{
+					if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
+					{
+						_allowed_method = true;
+						break ;
+					}
+				}
+				if (!_allowed_method)
+				{
+					_headers["Status"] = "405 Method Not Allowed";
+					_headers["Content-Type"] = "text/html";
+					getFileContent(server.getErrorPage(405), server);
+				}
+				else if (_method == "GET")
+				{
+					if (_filename.find_last_of(".") != std::string::npos)
+						_headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.find_last_of("."))];
+					else
+						_headers["Content-Type"] = "text/html";
+					_headers["Status"] = "200 OK";
+					getFileContent(rootPath + _filename, server);
+				}
+				else if (_method == "POST")
+				{
+					size_t filenameStart = _body.find("filename=\"");
+					std::string filename;
+					filenameStart += 10;
+					size_t filenameEnd = _body.find("\"", filenameStart);
+					filename = _body.substr(filenameStart, filenameEnd - filenameStart);
 
-			size_t contentTypeStart = _body.find(CRLF CRLF);
-			contentTypeStart += 4;
-			std::string body = _body.substr(contentTypeStart);
-			if (body.find_last_of("---------") != std::string::npos)
-				body.erase(body.find_first_of("---------"));
-			_body.clear();
-			_body = body;
-			std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str());
-			if (file && file.is_open())
-			{
-				file << body;
-				file.close();
-				_headers["Status"] = "201 Created";
-				_headers["Content-Type"] = "text/html";
-				_headers["Location"] = server.getUploadDir() + filename;
-				getFileContent(rootPath + _filename, server);
+					size_t contentTypeStart = _body.find(CRLF CRLF);
+					contentTypeStart += 4;
+					std::string body = _body.substr(contentTypeStart);
+					if (body.find_last_of("---------") != std::string::npos)
+						body.erase(body.find_first_of("---------"));
+					_body.clear();
+					_body = body;
+					std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str());
+					if (file && file.is_open())
+					{
+						file << body;
+						file.close();
+						_headers["Status"] = "201 Created";
+						_headers["Content-Type"] = "text/html";
+						_headers["Location"] = server.getUploadDir() + filename;
+						getFileContent(rootPath + _path, server);
+					}
+					else
+					{
+						_headers["Status"] = "502 Bad Gateway";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(502), server);
+					}
+				}
+				else if (_method == "DELETE")
+				{
+					if (remove((server.getRootPath() + server.getUploadDir() + _path).c_str()) != 0)
+					{
+						_headers["Status"] = "404 Not Found";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(404), server);
+					}
+					else
+					{
+						_headers["Status"] = "204 No Content";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(204), server);
+					}
+				}
 			}
 			else
-			{
-				_headers["Status"] = "502 Bad Gateway";
-				_headers["Content-Type"] = "text/html";
-				getFileContent(server.getErrorPage(502), server);
-			}
-		}
-		else if (_method == "DELETE")
-		{
-			if (remove((server.getRootPath() + server.getUploadDir() + _filename).c_str()) != 0)
 			{
 				_headers["Status"] = "404 Not Found";
 				_headers["Content-Type"] = "text/html";
 				getFileContent(server.getErrorPage(404), server);
-			}
-			else
-			{
-				_headers["Status"] = "204 No Content";
-				_headers["Content-Type"] = "text/html";
-				getFileContent(server.getErrorPage(204), server);
 			}
 		}
 	}
@@ -254,7 +242,7 @@ void	Request::parseRequest(std::string &msg)
 	// Parse the request line
     if (std::getline(request_stream, line)) {
         std::istringstream request_line(line);
-        request_line >> _method >> _filename >> _httpVersion;
+        request_line >> _method >> _path >> _httpVersion;
     }
 
 	// Parse headers
