@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 15:43:41 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 16:46:13 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,24 +150,62 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 				}
 				else if (_method == "POST")
 				{
+					if (_headers["boundary"].empty())
+					{
+						std::cout << "Boundary not found" << std::endl;
+						_headers["Status"] = "400 Bad Request";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(400), server);
+						break;
+					}
+					std::string boundary = _headers["boundary"];
+					
+					// Find the filename
 					size_t filenameStart = _body.find("filename=\"");
-					std::string filename;
+					if (filenameStart == std::string::npos)
+					{
+						std::cout << "Filename start not found" << std::endl;
+						_headers["Status"] = "400 Bad Request";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(400), server);
+						break;
+					}
 					filenameStart += 10;
 					size_t filenameEnd = _body.find("\"", filenameStart);
-					filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+					std::string filename = _body.substr(filenameStart, filenameEnd - filenameStart);
 
-					size_t contentTypeStart = _body.find(CRLF CRLF);
-					contentTypeStart += 4;
-					std::string body = _body.substr(contentTypeStart);
-					if (body.find_last_of("---------") != std::string::npos)
-						body.erase(body.find_first_of("---------"));
-					_body.clear();
-					_body = body;
-					std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str());
+					// Find the start of the file content
+					size_t fileContentStart = _body.find(CRLF CRLF, filenameEnd) + 4;
+					if (fileContentStart == std::string::npos)
+					{
+						std::cout << "File content start not found" << std::endl;
+						_headers["Status"] = "400 Bad Request";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(400), server);
+						break;
+					}
+
+					// Find the end of the file content
+					size_t fileContentEnd = _body.find(boundary, fileContentStart) - 4;
+					if (fileContentEnd == std::string::npos)
+					{
+						std::cout << "File content end not found" << std::endl;
+						_headers["Status"] = "400 Bad Request";
+						_headers["Content-Type"] = "text/html";
+						getFileContent(server.getErrorPage(400), server);
+						break;
+					}
+
+					// Extract the file content
+					std::string fileContent = _body.substr(fileContentStart, fileContentEnd - fileContentStart);
+
+					// Write the file content to a file
+					std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str(), std::ios::binary);
 					if (file && file.is_open())
 					{
-						file << body;
+						file.write(fileContent.c_str(), fileContent.size());
 						file.close();
+
 						_headers["Status"] = "201 Created";
 						_headers["Content-Type"] = "text/html";
 						_headers["Location"] = server.getUploadDir() + filename;
@@ -179,8 +217,42 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 						_headers["Content-Type"] = "text/html";
 						getFileContent(server.getErrorPage(502), server);
 					}
-					break ;
+					break;
 				}
+				//else if (_method == "POST")
+				//{
+				//	size_t filenameStart = _body.find("filename=\"");
+				//	std::string filename;
+				//	filenameStart += 10;
+				//	size_t filenameEnd = _body.find("\"", filenameStart);
+				//	filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+
+				//	size_t contentTypeStart = _body.find(CRLF CRLF);
+				//	contentTypeStart += 4;
+				//	std::string body = _body.substr(contentTypeStart);
+				//	if (body.find_last_of("---------") != std::string::npos)
+				//		body.erase(body.find_first_of("---------"));
+				//	_body.clear();
+				//	_body = body;
+				//	std::cout << "body: " << body << std::endl;
+				//	std::ofstream file((server.getRootPath() + server.getUploadDir() + filename).c_str(), std::ios::binary);
+				//	if (file && file.is_open())
+				//	{
+				//		file << body;
+				//		file.close();
+				//		_headers["Status"] = "201 Created";
+				//		_headers["Content-Type"] = "text/html";
+				//		_headers["Location"] = server.getUploadDir() + filename;
+				//		getFileContent(rootPath + _filename, server);
+				//	}
+				//	else
+				//	{
+				//		_headers["Status"] = "502 Bad Gateway";
+				//		_headers["Content-Type"] = "text/html";
+				//		getFileContent(server.getErrorPage(502), server);
+				//	}
+				//	break ;
+				//}
 				else if (_method == "DELETE")
 				{
 					if (remove((server.getRootPath() + server.getUploadDir() + _path).c_str()) != 0)
@@ -270,7 +342,9 @@ void	Request::parseRequest(std::string &msg)
 			body += line + "\n";
 		}
 		_body = body;
+		size_t boundaryPos = _headers["Content-Type"].find("boundary=");
+		if (boundaryPos != std::string::npos)
+			_headers["boundary"] = "--" + _body.substr(boundaryPos + 9);
 	}
 	initialize();
-	
 }
