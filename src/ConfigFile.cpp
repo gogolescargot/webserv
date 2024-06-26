@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/26 14:15:08 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/26 15:10:13 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -638,24 +638,15 @@ int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 		{
 			if (isKeyword(i) == 1)
 			{
-				if (getArgument(i, *server))
-				{
-					return (1);
-				}
+				getArgument(i, *server);
 			}
 			else if (isKeyword(i) == 2)
 			{
-				if (getMultipleArgument(i, *server))
-				{
-					return (1);
-				}
+				getMultipleArgument(i, *server);
 			}
 			else if (isKeyword(i) == 3)
 			{
-				if (getLocation(i, *server))
-				{
-					return (1);
-				}
+				getLocation(i, *server);
 			}
 			else
 			{
