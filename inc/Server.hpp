@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/25 14:34:02 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/27 17:29:45 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ class Server
 	public:
 		Server();
 		~Server();
+		void setName(std::istringstream &iss);
 		void setHostName(const std::string &hostname);
 		void setErrorPages(int errCode, const std::string &errorPages);
 		void setMaxBodySize(size_t maxBodySize);
@@ -38,6 +39,7 @@ class Server
 		void addCGI(std::istringstream &iss);
 		void setUploadDir(std::istringstream &iss);
 
+		const std::string &getName();
 		const int &getPort() const;
 		const std::string &getRootPath() const;
 		const std::vector<std::string> &getIndexes() const;
@@ -52,6 +54,7 @@ class Server
 		void displayServer();
 
 	private:
+		std::string							_name;
 		std::string							_hostname;
 		std::map<int, const std::string>	_errorPages;
 		std::vector<Location *>				_locations;

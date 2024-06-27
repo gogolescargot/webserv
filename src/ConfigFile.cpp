@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/26 17:47:42 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/27 17:32:30 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,6 +221,10 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 	else if (checkToken(key, "upload_dir"))
 	{
 		server.setUploadDir(iss);
+	}
+	else if (checkToken(key, "server_name"))
+	{
+		server.setName(iss);
 	}
 
 	i++;
@@ -657,6 +661,18 @@ int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 	if (bracket != 0)
 	{
 		throw std::runtime_error("Formatting error: Bracket error");
+	}
+
+	// servername listen root client size uploaddir
+
+	if (server->getName().empty()
+	|| server->getHostName().empty()
+	|| server->getPort() == 0
+	|| server->getUploadDir().empty()
+	|| server->getRootPath().empty()
+	|| server->getMaxBodySize() == 0)
+	{
+		throw std::runtime_error("Formatting error: Missing keyword");
 	}
 
 	return (0);

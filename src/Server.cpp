@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 14:42:48 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/27 17:30:34 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,20 @@ const std::map<std::string, std::string> &Server::getCGI() const
 const std::string &Server::getUploadDir() const
 {
 	return _uploadDir;
+}
+
+void Server::setName(std::istringstream &iss)
+{
+	std::string name;
+
+	if (!(iss >> name))
+		throw std::runtime_error("Error: invalid server name");
+	_name = name;
+}
+
+const std::string &Server::getName()
+{
+	return (_name);
 }
 
 void Server::setRootPath(std::istringstream &iss)
