@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 13:45:55 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/27 14:08:22 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,8 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
         if (locations.size() > 0)
         {
             Location *it = locations[0];
-            uploadDir = it->getUploadDir();
+            if (it->getUploadDir() != "")
+                uploadDir = it->getUploadDir();
             std::vector<std::string> indexes = it->getIndexes();
             std::vector<std::string> allow_methods = it->getAllowMethods();
             _filename = _path;
@@ -131,7 +132,9 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
             std::vector<std::string> allow_methods = (*it)->getAllowMethods();
 			if (_path == (*it)->getPath())
 			{
-                uploadDir = (*it)->getUploadDir();
+                _allowed_method = false;
+                if ((*it)->getUploadDir() != "")
+                    uploadDir = (*it)->getUploadDir();
 				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 				{
 					if (std::ifstream((rootPath + *it).c_str()))
