@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 15:25:01 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/27 15:01:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 #define CRLF "\r\n"
 
@@ -40,14 +42,19 @@ class Request
 		std::map<long, std::string> _errorCodes;
 		std::string _content;
 		std::string _body;
+        std::string _rootPath;
+        std::string _uploadDir;
 		bool is_bad_request;
 		bool _allowed_method;
+        bool _auto_index;
 	public:
 		Request();
 		~Request();
 		void initialize();
 		void parseRequest(std::string &msg);
 		void getFileContent(const std::string &filename, const Server &server);
+        void getDirectoryListing(const std::string &path, const Server &server);
+        void initializeVariables(const Server &server);
 		void onMessageReceived(int client_fd, const Server &server);
 		int	checkRequest(std::string &msg);
 };

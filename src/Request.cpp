@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 14:08:22 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/27 15:44:28 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,18 @@ Request::Request()
 {
 	is_bad_request = false;
 	_allowed_method = false;
+    _auto_index = false;
+    _method.clear();
+    _filename.clear();
+    _path.clear();
+    _httpVersion.clear();
+    _headers.clear();
+    _mimeTypes.clear();
+    _errorCodes.clear();
+    _content.clear();
+    _body.clear();
+    _rootPath.clear();
+    _uploadDir.clear();
 }
 
 Request::~Request()
@@ -75,6 +87,28 @@ void	Request::initialize()
 	_headers["Cache-Control"] = "no-cache, private";
 }
 
+void    Request::getDirectoryListing(const std::string &path, const Server &server)
+{
+    DIR *dir;
+
+    if ((dir = opendir(path.c_str())) != NULL)
+    {
+        std::string content = "<html><head><title>Index of " + _path + "</title></head><body><h1>Index of " + _path + "</h1><hr><pre>";
+        struct dirent *ent;
+        while ((ent = readdir(dir)) != NULL)
+            content += "<a href=\"" + _path + ent->d_name + "\">" + ent->d_name + "</a><br>";
+        closedir(dir);
+        content += "</pre><hr></body></html>";
+        _content = content;
+        _headers["Content-Length"] = ToString(_content.size());
+    }
+    else
+    {
+        _headers["Status"] = "404 Not Found";
+        getFileContent(server.getErrorPage(404), server);
+    }
+}
+
 void	Request::getFileContent(const std::string &filename, const Server &server)
 {
 	struct stat fileStat;
@@ -96,27 +130,47 @@ void	Request::getFileContent(const std::string &filename, const Server &server)
 	}
 }
 
-void	Request::onMessageReceived(int client_fd, const Server &server)
+void    Request::initializeVariables(const Server &server)
 {
-	if (is_bad_request)
-	{
-		_headers["Status"] = "400 Bad Request";
-		_headers["Content-Type"] = "text/html";
-		getFileContent(server.getErrorPage(400), server);
-	}
-	else
-	{
-		std::string rootPath = server.getRootPath();
-        std::string uploadDir = server.getUploadDir();
-		std::vector<Location *> locations = server.getLocations();
-        if (locations.size() > 0)
+    std::vector<Location *> locations = server.getLocations();
+    _rootPath = server.getRootPath();
+    _uploadDir = server.getUploadDir();
+    if (locations.size() > 0)
+    {
+        Location *it = locations[0];
+        std::vector<std::string> indexes = it->getIndexes();
+        std::vector<std::string> allow_methods = it->getAllowMethods();
+        _filename = _path;
+        if (it->getUploadDir() != "")
+            _uploadDir = it->getUploadDir();
+        _auto_index = it->getAutoIndex();
+        for (size_t i = 0; i < allow_methods.size(); i++)
         {
-            Location *it = locations[0];
-            if (it->getUploadDir() != "")
-                uploadDir = it->getUploadDir();
-            std::vector<std::string> indexes = it->getIndexes();
-            std::vector<std::string> allow_methods = it->getAllowMethods();
-            _filename = _path;
+            if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
+            {
+                _allowed_method = true;
+                break ;
+            }
+        }
+    }
+    for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
+    {
+        std::vector<std::string> l_indexes = (*it)->getIndexes();
+        std::vector<std::string> allow_methods = (*it)->getAllowMethods();
+        if (_path == (*it)->getPath() || _path.substr(0, _path.size() -1) == (*it)->getPath())
+        {
+            _allowed_method = false;
+            _auto_index = (*it)->getAutoIndex();
+            if ((*it)->getUploadDir() != "")
+                _uploadDir = (*it)->getUploadDir();
+            for (std::vector<std::string>::iterator it = l_indexes.begin(); it != l_indexes.end(); it++)
+            {
+                if (std::ifstream((_rootPath + *it).c_str()))
+                {
+                    _filename = *it;
+                    break ;
+                }
+            }
             for (size_t i = 0; i < allow_methods.size(); i++)
             {
                 if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
@@ -126,148 +180,131 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
                 }
             }
         }
-		for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
-		{
-            std::vector<std::string> indexes = (*it)->getIndexes();
-            std::vector<std::string> allow_methods = (*it)->getAllowMethods();
-			if (_path == (*it)->getPath())
-			{
-                _allowed_method = false;
-                if ((*it)->getUploadDir() != "")
-                    uploadDir = (*it)->getUploadDir();
-				for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
-				{
-					if (std::ifstream((rootPath + *it).c_str()))
-					{
-						_filename = *it;
-						break ;
-					}
-				}
-				for (size_t i = 0; i < allow_methods.size(); i++)
-				{
-					if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
-					{
-						_allowed_method = true;
-						break ;
-					}
-				}
-			}
-            if (!_allowed_method)
-            {
-                _headers["Status"] = "405 Method Not Allowed";
+    }
+}
+
+void	Request::onMessageReceived(int client_fd, const Server &server)
+{
+	if (is_bad_request)
+	{
+		_headers["Status"] = "400 Bad Request";
+		_headers["Content-Type"] = "text/html";
+		getFileContent(server.getErrorPage(400), server);
+	}
+	else
+	{   
+        initializeVariables(server);
+        if (!_allowed_method)
+        {
+            _headers["Status"] = "405 Method Not Allowed";
+            _headers["Content-Type"] = "text/html";
+            getFileContent(server.getErrorPage(405), server);
+        }
+        else if (_method == "GET" && _path != "/" && _path[_path.size() - 1] == '/' && _auto_index)
+        {
+            _headers["Status"] = "200 OK";
+            _headers["Content-Type"] = "text/html";
+            getDirectoryListing(_rootPath + _path, server);
+        }
+        else if (_method == "GET")
+        {
+            if (_filename.find_last_of(".") != std::string::npos)
+                _headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.find_last_of("."))];
+            else
                 _headers["Content-Type"] = "text/html";
-                getFileContent(server.getErrorPage(405), server);
-                break ;
-            }
-            else if (_method == "GET")
+            _headers["Status"] = "200 OK";
+            getFileContent(_rootPath + _filename, server);
+        }
+        else if (_method == "POST")
+        {
+            if (_headers["boundary"].empty())
             {
-                if (_filename.find_last_of(".") != std::string::npos)
-                    _headers["Content-Type"] = _mimeTypes[_filename.substr(_filename.find_last_of("."))];
-                else
-                    _headers["Content-Type"] = "text/html";
-                _headers["Status"] = "200 OK";
-                getFileContent(rootPath + _filename, server);
-                break ;
+                _headers["Status"] = "400 Bad Request";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(400), server);
             }
-            else if (_method == "POST")
+            std::string boundary = _headers["boundary"];
+            _headers["boundary"].erase();
+            
+            // Find the filename
+            size_t filenameStart = _body.find("filename=\"");
+            if (filenameStart == std::string::npos)
             {
-                if (_headers["boundary"].empty())
-                {
-                    _headers["Status"] = "400 Bad Request";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(400), server);
-                    break;
-                }
-                std::string boundary = _headers["boundary"];
-                _headers["boundary"].erase();
-                
-                // Find the filename
-                size_t filenameStart = _body.find("filename=\"");
-                if (filenameStart == std::string::npos)
-                {
-                    _headers["Status"] = "400 Bad Request";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(400), server);
-                    break;
-                }
-                filenameStart += 10;
-                size_t filenameEnd = _body.find("\"", filenameStart);
-                std::string filename = _body.substr(filenameStart, filenameEnd - filenameStart);
-
-                // Find the start of the file content
-                size_t fileContentStart = _body.find(CRLF CRLF, filenameEnd) + 4;
-                if (fileContentStart == std::string::npos)
-                {
-                    _headers["Status"] = "400 Bad Request";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(400), server);
-                    break;
-                }
-
-                // Find the end of the file content
-                size_t fileContentEnd = _body.find(boundary, fileContentStart) - 4;
-                if (fileContentEnd == std::string::npos)
-                {
-                    _headers["Status"] = "400 Bad Request";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(400), server);
-                    break;
-                }
-
-                // Extract the file content
-                std::string fileContent = _body.substr(fileContentStart, fileContentEnd - fileContentStart);
-                _body = fileContent;
-                if (fileContent.size() > server.getMaxBodySize())
-                {
-                    _headers["Status"] = "413 Payload Too Large";
-                    _headers["Content-Type"] = "text/html";
-                    _body.clear();
-                    getFileContent(server.getErrorPage(413), server);
-                    break;
-                }
-                // Write the file content to a file
-                std::ofstream file((server.getRootPath() + uploadDir + filename).c_str(), std::ios::binary);
-                if (file && file.is_open())
-                {
-                    file.write(fileContent.c_str(), fileContent.size());
-                    file.close();
-
-                    _headers["Status"] = "201 Created";
-                    _headers["Content-Type"] = "text/html";
-                    _headers["Location"] = uploadDir + filename;
-                    getFileContent(rootPath + _filename, server);
-                }
-                else
-                {
-                    _headers["Status"] = "502 Bad Gateway";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(502), server);
-                }
-                break;
+                _headers["Status"] = "400 Bad Request";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(400), server);
             }
-            else if (_method == "DELETE")
+            filenameStart += 10;
+            size_t filenameEnd = _body.find("\"", filenameStart);
+            std::string filename = _body.substr(filenameStart, filenameEnd - filenameStart);
+
+            // Find the start of the file content
+            size_t fileContentStart = _body.find(CRLF CRLF, filenameEnd) + 4;
+            if (fileContentStart == std::string::npos)
             {
-                if (remove((server.getRootPath() + uploadDir + _path).c_str()) != 0)
-                {
-                    _headers["Status"] = "404 Not Found";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(404), server);
-                }
-                else
-                {
-                    _headers["Status"] = "204 No Content";
-                    _headers["Content-Type"] = "text/html";
-                    getFileContent(server.getErrorPage(204), server);
-                }
-                break ;
+                _headers["Status"] = "400 Bad Request";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(400), server);
             }
-			else
-			{
-				_headers["Status"] = "404 Not Found";
-				_headers["Content-Type"] = "text/html";
-				getFileContent(server.getErrorPage(404), server);
-			}
-		}
+
+            // Find the end of the file content
+            size_t fileContentEnd = _body.find(boundary, fileContentStart) - 4;
+            if (fileContentEnd == std::string::npos)
+            {
+                _headers["Status"] = "400 Bad Request";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(400), server);
+            }
+
+            // Extract the file content
+            std::string fileContent = _body.substr(fileContentStart, fileContentEnd - fileContentStart);
+            _body = fileContent;
+            if (fileContent.size() > server.getMaxBodySize())
+            {
+                _headers["Status"] = "413 Payload Too Large";
+                _headers["Content-Type"] = "text/html";
+                _body.clear();
+                getFileContent(server.getErrorPage(413), server);
+            }
+            // Write the file content to a file
+            std::ofstream file((_rootPath + _uploadDir + filename).c_str(), std::ios::binary);
+            if (file && file.is_open())
+            {
+                file.write(fileContent.c_str(), fileContent.size());
+                file.close();
+                _headers["Status"] = "201 Created";
+                _headers["Content-Type"] = "text/html";
+                _headers["Location"] = _uploadDir + filename;
+                getFileContent(_rootPath + _filename, server);
+            }
+            else
+            {
+                _headers["Status"] = "502 Bad Gateway";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(502), server);
+            }
+        }
+        else if (_method == "DELETE")
+        {
+            if (remove((_rootPath + _uploadDir + _path).c_str()) != 0)
+            {
+                _headers["Status"] = "404 Not Found";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(404), server);
+            }
+            else
+            {
+                _headers["Status"] = "204 No Content";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(204), server);
+            }
+        }
+        else
+        {
+            _headers["Status"] = "404 Not Found";
+            _headers["Content-Type"] = "text/html";
+            getFileContent(server.getErrorPage(404), server);
+        }
 	}
 	
 	std::string response = _httpVersion + " " + _headers["Status"] + CRLF;
