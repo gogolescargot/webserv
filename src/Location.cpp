@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 14:41:21 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/27 15:09:11 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,23 @@
 
 Location::Location(Server *server) : _server(server)
 {
-	
+	_uploadDir = "";
+    _autoIndex = false;
+    _redirect = false;
+    _redirectCode = 0;
+    _path = "";
+    _root = "";
+    _indexes.clear();
+    _allowMethods.clear();
+    _cgi.clear();
+    _errorPages.insert(std::pair<int, const std::string>(204, "error_pages/204.html"));
+    _errorPages.insert(std::pair<int, const std::string>(400, "error_pages/400.html"));
+    _errorPages.insert(std::pair<int, const std::string>(403, "error_pages/403.html"));
+    _errorPages.insert(std::pair<int, const std::string>(404, "error_pages/404.html"));
+    _errorPages.insert(std::pair<int, const std::string>(405, "error_pages/405.html"));
+    _errorPages.insert(std::pair<int, const std::string>(410, "error_pages/410.html"));
+    _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
+    _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
 }
 
 Location::Location(const Location &copy)
@@ -110,6 +126,10 @@ void Location::setPath(std::istringstream &iss)
 
 void Location::setErrorPages(int errCode, const std::string &errorPages)
 {
+    if (_errorPages.find(errCode) != _errorPages.end())
+    {
+        _errorPages.erase(errCode);
+    }
 	_errorPages.insert(std::pair<int, const std::string>(errCode, errorPages));
 }
 
