@@ -6,21 +6,11 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 12:26:47 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 13:03:38 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "webserv.hpp"
-
-// Header file format
-//GET /index.html HTTP/1.1
-//Host: example.com
-//User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
-//Accept-Language: en-US,en;q=0.9
-//Accept-Charsets: utf-8, iso-8859-1;q=0.5
-//Referer: http://example.com/previous-page
-//Authorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l
-//Connection: Keep-Alive
+#include "Request.hpp"
 
 Request::Request()
 {
@@ -38,6 +28,7 @@ Request::Request()
     _body.clear();
     _rootPath.clear();
     _uploadDir.clear();
+	_prefix.clear();
 }
 
 Request::~Request()
@@ -131,55 +122,48 @@ void	Request::getFileContent(const std::string &filename, const Server &server)
 
 void    Request::initializeVariables(const Server &server)
 {
+	Location *location;
+	std::vector<std::string> indexes;
+	std::vector<std::string> allow_methods;
     std::vector<Location *> locations = server.getLocations();
+
     _rootPath = server.getRootPath();
     _uploadDir = server.getUploadDir();
-    if (locations.size() > 0)
-    {
-        Location *it = locations[0];
-        std::vector<std::string> indexes = it->getIndexes();
-        std::vector<std::string> allow_methods = it->getAllowMethods();
-        _filename = _path;
-        if (it->getUploadDir() != "")
-            _uploadDir = it->getUploadDir();
-        _auto_index = it->getAutoIndex();
-        for (size_t i = 0; i < allow_methods.size(); i++)
-        {
-            if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
-            {
-                _allowed_method = true;
-                break ;
-            }
-        }
-    }
-    for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
-    {
-        std::vector<std::string> l_indexes = (*it)->getIndexes();
-        std::vector<std::string> allow_methods = (*it)->getAllowMethods();
-        if (_path == (*it)->getPath() || _path.substr(0, _path.size() -1) == (*it)->getPath())
-        {
-            _allowed_method = false;
-            _auto_index = (*it)->getAutoIndex();
-            if ((*it)->getUploadDir() != "")
-                _uploadDir = (*it)->getUploadDir();
-            for (std::vector<std::string>::iterator it = l_indexes.begin(); it != l_indexes.end(); it++)
-            {
-                if (std::ifstream((_rootPath + *it).c_str()))
-                {
-                    _filename = *it;
-                    break ;
-                }
-            }
-            for (size_t i = 0; i < allow_methods.size(); i++)
-            {
-                if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
-                {
-                    _allowed_method = true;
-                    break ;
-                }
-            }
-        }
-    }
+	for (std::vector<Location *>::iterator it = locations.begin(); it != locations.end(); it++)
+	{
+		if (startsWith(_path, (*it)->getPath()))
+		{
+			if (_prefix.size() < (*it)->getPath().size())
+			{
+				_prefix = (*it)->getPath();
+				location = *it;
+			}
+		}
+	}
+	if (_prefix.empty())
+		_prefix = "/";
+	_filename = _path;
+	indexes = location->getIndexes();
+	allow_methods = location->getAllowMethods();
+	_auto_index = location->getAutoIndex();
+	if (location->getUploadDir() != "")
+		_uploadDir = location->getUploadDir();
+	for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
+	{
+		if (std::ifstream((_rootPath + *it).c_str()) && _path == _prefix)
+		{
+			_filename = *it;
+			break ;
+		}
+	}
+	for (size_t i = 0; i < allow_methods.size(); i++)
+	{
+		if (allow_methods[i] == _method && (_method == "GET" || _method == "POST" || _method == "DELETE"))
+		{
+			_allowed_method = true;
+			break ;
+		}
+	}
 }
 
 void	Request::onMessageReceived(int client_fd, const Server &server)
@@ -191,7 +175,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 		getFileContent(server.getErrorPage(400), server);
 	}
 	else
-	{   
+	{
         initializeVariables(server);
         if (!_allowed_method)
         {

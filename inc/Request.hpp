@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 15:01:46 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/28 12:43:41 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include "Location.hpp"
-#include "Server.hpp"
 #include <fstream>
 #include <sstream>
 #include <iterator>
@@ -26,6 +24,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include "Location.hpp"
+#include "Server.hpp"
+#include "utils.hpp"
 
 #define CRLF "\r\n"
 
@@ -36,6 +37,7 @@ class Request
 		std::string _method;
 		std::string _filename;
 		std::string _path;
+		std::string _prefix;
 		std::string _httpVersion;
 		std::map<std::string, std::string> _headers;
 		std::map<std::string, std::string> _mimeTypes;
