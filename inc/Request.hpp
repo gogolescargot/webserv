@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 12:43:41 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 14:47:22 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ class Request
 		std::string _body;
         std::string _rootPath;
         std::string _uploadDir;
+		std::string _redirectPath;
+		int 		_redirectCode;
+		bool _is_redirect;
 		bool is_bad_request;
 		bool _allowed_method;
         bool _auto_index;

@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 13:03:38 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:22:58 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ Request::Request()
     _rootPath.clear();
     _uploadDir.clear();
 	_prefix.clear();
+	_redirectCode = 0;
+	_redirectPath.clear();
+	_is_redirect = false;
 }
 
 Request::~Request()
@@ -60,6 +63,8 @@ void	Request::initialize()
 	_mimeTypes[".mp3"] = "audio/mpeg";
 	_errorCodes[200] = "OK";
 	_errorCodes[201] = "Created";
+	_errorCodes[301] = "Moved Permanently";
+	_errorCodes[308] = "Permanent Redirect";
 	_errorCodes[400] = "Bad Request";
 	_errorCodes[403] = "Forbidden";
 	_errorCodes[404] = "Not Found";
@@ -135,6 +140,12 @@ void    Request::initializeVariables(const Server &server)
 		{
 			if (_prefix.size() < (*it)->getPath().size())
 			{
+				if ((*it)->getRedirectCode() != 0)
+				{
+					_is_redirect = true;
+					_redirectPath = (*it)->getRedirectPath();
+					_redirectCode = (*it)->getRedirectCode();
+				}
 				_prefix = (*it)->getPath();
 				location = *it;
 			}
@@ -177,7 +188,14 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 	else
 	{
         initializeVariables(server);
-        if (!_allowed_method)
+		if (_is_redirect)
+		{
+			_headers.clear();
+			_headers["Status"] = ToString(_redirectCode) + " " + _errorCodes[_redirectCode];
+			_headers["Location"] = _redirectPath;
+			_headers["Content-Length"] = "0";
+		}
+        else if (!_allowed_method)
         {
             _headers["Status"] = "405 Method Not Allowed";
             _headers["Content-Type"] = "text/html";
