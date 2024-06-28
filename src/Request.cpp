@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 15:29:51 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:37:49 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,20 @@ void    Request::getDirectoryListing(const std::string &path, const Server &serv
 void	Request::getFileContent(const std::string &filename, const Server &server)
 {
 	struct stat fileStat;
-	if (stat(filename.c_str(), &fileStat) == 0 && S_ISREG(fileStat.st_mode))
+
+	if (access(filename.c_str(), F_OK) == -1)
+	{
+		_headers["Status"] = "404 Not Found";
+		_headers["Content-Type"] = "text/html";
+		getFileContent(server.getErrorPage(404), server);
+	}
+	else if (access(filename.c_str(), R_OK) == -1)
+	{
+		_headers["Status"] = "403 Forbidden";
+		_headers["Content-Type"] = "text/html";
+		getFileContent(server.getErrorPage(403), server);
+	}
+	else if (stat(filename.c_str(), &fileStat) == 0 && S_ISREG(fileStat.st_mode))
 	{
 		std::ifstream file(filename.c_str());
 		if (file.good())
@@ -268,7 +281,19 @@ void	Request::handlePostRequest(const Server &server)
 
 void Request::handleDeleteRequest(const Server &server)
 {
-	if (remove((_rootPath + _path).c_str()) == 0)
+	if (access((_rootPath + _path).c_str(), F_OK) == -1)
+	{
+		_headers["Status"] = "404 Not Found";
+		_headers["Content-Type"] = "text/html";
+		getFileContent(server.getErrorPage(404), server);
+	}
+	else if (access((_rootPath + _path).c_str(), R_OK) == -1)
+	{
+		_headers["Status"] = "403 Forbidden";
+		_headers["Content-Type"] = "text/html";
+		getFileContent(server.getErrorPage(403), server);
+	}
+	else if (remove((_rootPath + _path).c_str()) == 0)
 	{
 		_headers["Status"] = "204 No Content";
 		_headers["Content-Type"] = "text/html";
