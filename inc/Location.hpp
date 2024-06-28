@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:17:35 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/20 20:37:06 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/28 16:23:40 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ class Location
 		
 		const std::string &getPath() const;
 		const std::string &getRootPath() const;
+		const std::map<int, const std::string> &getErrorPages() const;
+		const std::string &getErrorPage(int ErrorCode) const;
 		const std::vector<std::string> &getIndexes() const;
 		const bool &getAutoIndex() const;
 		const std::vector<std::string> &getAllowMethods() const;

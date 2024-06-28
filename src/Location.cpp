@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 15:09:11 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/28 16:31:04 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,19 @@ void Location::setPath(std::istringstream &iss)
 	if (!(iss >> path))
 		throw std::runtime_error("Error: invalid path");
 	_path = path;
+}
+
+const std::map<int, const std::string> &Location::getErrorPages() const
+{
+	return _errorPages;
+}
+
+const std::string &Location::getErrorPage(int ErrorCode) const
+{
+	if (_errorPages.find(ErrorCode) != _errorPages.end())
+		return _errorPages.find(ErrorCode)->second;
+	else 
+		return _errorPages.find(404)->second;
 }
 
 void Location::setErrorPages(int errCode, const std::string &errorPages)

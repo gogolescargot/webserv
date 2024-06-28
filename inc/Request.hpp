@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 15:41:23 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 16:34:22 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class Request
 		std::string _httpVersion;
 		std::map<std::string, std::string> _headers;
 		std::map<std::string, std::string> _mimeTypes;
-		std::map<long, std::string> _errorCodes;
+		std::map<int, const std::string> _errorPages;
 		std::string _content;
 		std::string _body;
         std::string _rootPath;
@@ -66,4 +66,6 @@ class Request
 		void onMessageReceived(int client_fd, const Server &server);
 		int	checkRequest(std::string &msg);
 		void fillContent(const std::string &status, const std::string &contenttype, const std::string &filename, const Server &server);
+
+		const std::string &getErrorPage(int ErrorCode) const;
 };

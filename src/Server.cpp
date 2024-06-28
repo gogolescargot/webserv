@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 12:24:28 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 16:24:27 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ void Server::setHostName(const std::string &hostname)
 
 void Server::setErrorPages(int errCode, const std::string &errorPages)
 {
+	if (_errorPages.find(errCode) != _errorPages.end())
+		_errorPages.erase(errCode);
 	_errorPages.insert(std::pair<int, const std::string>(errCode, errorPages));
 }
 
@@ -73,6 +75,11 @@ const std::string &Server::getHostName() const
 const std::vector<Location *> &Server::getLocations() const
 {
 	return _locations;
+}
+
+const std::map<int, const std::string> &Server::getErrorPages() const
+{
+	return _errorPages;
 }
 
 const std::string &Server::getErrorPage(int ErrorCode) const
