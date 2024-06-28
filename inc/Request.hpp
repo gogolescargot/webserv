@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 15:26:54 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:41:23 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,5 @@ class Request
 		void handleGetRequest(const Server &server);
 		void onMessageReceived(int client_fd, const Server &server);
 		int	checkRequest(std::string &msg);
+		void fillContent(const std::string &status, const std::string &contenttype, const std::string &filename, const Server &server);
 };
