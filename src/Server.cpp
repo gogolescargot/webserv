@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 15:09:18 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/28 12:24:28 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 
 Server::Server() : _maxBodySize(0)
 {
+	_errorPages.insert(std::pair<int, const std::string>(204, "error_pages/204.html"));
+    _errorPages.insert(std::pair<int, const std::string>(400, "error_pages/400.html"));
+    _errorPages.insert(std::pair<int, const std::string>(403, "error_pages/403.html"));
+    _errorPages.insert(std::pair<int, const std::string>(404, "error_pages/404.html"));
+    _errorPages.insert(std::pair<int, const std::string>(405, "error_pages/405.html"));
+    _errorPages.insert(std::pair<int, const std::string>(410, "error_pages/410.html"));
+    _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
+    _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
 }
 
 Server::~Server()

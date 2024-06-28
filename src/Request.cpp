@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/27 15:44:28 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/28 12:26:47 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,6 @@ void    Request::getDirectoryListing(const std::string &path, const Server &serv
 void	Request::getFileContent(const std::string &filename, const Server &server)
 {
 	struct stat fileStat;
-
 	if (stat(filename.c_str(), &fileStat) == 0 && S_ISREG(fileStat.st_mode))
 	{
 		std::ifstream file(filename.c_str());
@@ -286,17 +285,17 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
         }
         else if (_method == "DELETE")
         {
-            if (remove((_rootPath + _uploadDir + _path).c_str()) != 0)
-            {
-                _headers["Status"] = "404 Not Found";
-                _headers["Content-Type"] = "text/html";
-                getFileContent(server.getErrorPage(404), server);
-            }
-            else
+            if (remove((_rootPath + _path).c_str()) == 0)
             {
                 _headers["Status"] = "204 No Content";
                 _headers["Content-Type"] = "text/html";
                 getFileContent(server.getErrorPage(204), server);
+            }
+            else
+            {
+                _headers["Status"] = "404 Not Found";
+                _headers["Content-Type"] = "text/html";
+                getFileContent(server.getErrorPage(404), server);
             }
         }
         else
