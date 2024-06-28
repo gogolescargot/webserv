@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 14:47:22 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:26:54 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,9 @@ class Request
 		void getFileContent(const std::string &filename, const Server &server);
         void getDirectoryListing(const std::string &path, const Server &server);
         void initializeVariables(const Server &server);
+		void handlePostRequest(const Server &server);
+		void handleDeleteRequest(const Server &server);
+		void handleGetRequest(const Server &server);
 		void onMessageReceived(int client_fd, const Server &server);
 		int	checkRequest(std::string &msg);
 };
