@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/29 11:02:12 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/29 13:07:24 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 Location::Location(Server *server) : _server(server)
 {
-	_uploadDir = "";
+	_uploadDir.clear();
     _autoIndex = false;
     _redirect = false;
     _redirectCode = 0;
-    _path = "";
-    _root = "";
+    _path.clear();
+    _root.clear();
     _indexes.clear();
     _allowMethods.clear();
     _cgi.clear();
@@ -28,6 +28,7 @@ Location::Location(Server *server) : _server(server)
     _errorPages.insert(std::pair<int, const std::string>(403, "error_pages/403.html"));
     _errorPages.insert(std::pair<int, const std::string>(404, "error_pages/404.html"));
     _errorPages.insert(std::pair<int, const std::string>(405, "error_pages/405.html"));
+    _errorPages.insert(std::pair<int, const std::string>(408, "error_pages/408.html"));
     _errorPages.insert(std::pair<int, const std::string>(410, "error_pages/410.html"));
     _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
     _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));

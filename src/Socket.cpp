@@ -42,6 +42,7 @@ std::vector<int> const &Socket::getClientFD() const
 
 void Socket::launchSocket(const Server &server)
 {
+    size_t body_size = server.getMaxBodySize();
     // Create a socket
     _server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_server_fd == -1)
@@ -120,11 +121,14 @@ void Socket::launchSocket(const Server &server)
         for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ) {
             int client_fd = *it;
 			char buffer[1024];
-			memset(buffer, 0, 1024);
 			int 	total_read = 0;
 			bool 	read_done = false;
+            
+			memset(buffer, 0, 1024);
             if (FD_ISSET(client_fd, &read_fds)) {
 				while (!read_done){
+                    if (_rawRequest.size() > body_size)
+                        break;
 					int valread = recv(client_fd, buffer , sizeof(buffer), 0);
 					if (valread <= 0) {
 						// Connection closed by the client
@@ -151,6 +155,15 @@ void Socket::launchSocket(const Server &server)
 					req.onMessageReceived(client_fd, server);
 					_rawRequest.clear();
 				}
+                else if (_rawRequest.size() > body_size)
+                {
+                    Request req;
+                    _rawRequest.clear();
+                    _rawRequest = "payload";
+                    req.parseRequest(_rawRequest);
+                    req.onMessageReceived(client_fd, server);
+                    break;
+                }
             } else {
                 ++it;
             }

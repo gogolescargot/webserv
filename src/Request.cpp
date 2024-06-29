@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:35:41 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/29 13:14:45 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ Request::Request()
 	_redirectCode = 0;
 	_redirectPath.clear();
 	_is_redirect = false;
+    timeout = false;
+    payload_too_large = false;
 }
 
 Request::~Request()
@@ -176,7 +178,7 @@ void    Request::initializeVariables(const Server &server)
 	indexes = location->getIndexes();
 	allow_methods = location->getAllowMethods();
 	_auto_index = location->getAutoIndex();
-	if (location->getUploadDir() != "")
+	if (!location->getUploadDir().empty())
 		_uploadDir = location->getUploadDir();
 	for (std::vector<std::string>::iterator it = indexes.begin(); it != indexes.end(); it++)
 	{
@@ -237,13 +239,19 @@ void	Request::handlePostRequest(const Server &server)
 		fillContent("400 Bad Request", "text/html", getErrorPage(400), server);
 
 	// Find the end of the file content
-	size_t fileContentEnd = _body.find(boundary, fileContentStart) - 4;
+    std::string::size_type fileContentEnd = _body.find("--" + boundary, fileContentStart);
 	if (fileContentEnd == std::string::npos)
 		fillContent("400 Bad Request", "text/html", getErrorPage(400), server);
-
+    else
+    {
+        // Remove trailing dashes
+        while (_body[fileContentEnd - 1] == '-' && fileContentEnd > fileContentStart)
+            fileContentEnd--;
+        // Remove trailing CRLF
+        fileContentEnd -= 2;
+    }
 	// Extract the file content
 	std::string fileContent = _body.substr(fileContentStart, fileContentEnd - fileContentStart);
-	_body = fileContent;
 	if (fileContent.size() > server.getMaxBodySize())
 	{
 		fillContent("413 Payload Too Large", "text/html", getErrorPage(413), server);
@@ -276,7 +284,11 @@ void Request::handleDeleteRequest(const Server &server)
 
 void	Request::onMessageReceived(int client_fd, const Server &server)
 {
-	if (is_bad_request)
+    if (payload_too_large)
+        fillContent("413 Payload Too Large", "text/html", getErrorPage(413), server);
+    else if (timeout)
+        fillContent("408 Request Timeout", "text/html", getErrorPage(408), server);
+    else if (is_bad_request)
 		fillContent("400 Bad Request", "text/html", getErrorPage(400), server);
 	else
 	{
@@ -330,11 +342,20 @@ int	Request::checkRequest(std::string &msg)
 
 void	Request::parseRequest(std::string &msg)
 {
-	if (checkRequest(msg) == -1)
-	{
-		is_bad_request = true;
-		return ;
-	}
+    if (msg == "timeout" || checkRequest(msg) == -1 || msg == "payload")
+    {
+        Server server;
+        _errorPages = server.getErrorPages();
+        _method = "GET";
+        _httpVersion = "HTTP/1.1";
+        if (msg == "timeout")
+            timeout = true;
+        else if (msg == "payload")
+            payload_too_large = true;
+        else
+            is_bad_request = true;
+        return ;
+    }
 	 // Use a stringstream to parse the HTTP request
     std::istringstream request_stream(msg);
     std::string line;
@@ -368,7 +389,10 @@ void	Request::parseRequest(std::string &msg)
 		_body = body;
 		size_t boundaryPos = _headers["Content-Type"].find("boundary=");
 		if (boundaryPos != std::string::npos)
-			_headers["boundary"] = "--" + _body.substr(boundaryPos + 9);
+        {
+			_headers["boundary"] = _body.substr(boundaryPos);
+            _headers["boundary"] = _headers["boundary"].substr(0, _headers["boundary"].find(CRLF));
+        }
 	}
 	initialize();
 }

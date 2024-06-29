@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:34:22 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/29 13:14:23 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 
 #define CRLF "\r\n"
 
+class Server;
 
 class Request
 {
@@ -50,6 +51,8 @@ class Request
 		int 		_redirectCode;
 		bool _is_redirect;
 		bool is_bad_request;
+        bool timeout;
+        bool payload_too_large;
 		bool _allowed_method;
         bool _auto_index;
 	public:
