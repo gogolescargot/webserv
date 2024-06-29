@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 16:10:27 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/24 22:37:10 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/06/29 13:19:49 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <map>
 # include <stdlib.h>
 # include <sys/epoll.h>
+# include <sys/time.h>
 
 # include "ConfigFile.hpp"
 # include "Location.hpp"

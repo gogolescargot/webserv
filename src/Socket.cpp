@@ -95,13 +95,28 @@ void Socket::launchSocket(const Server &server)
             }
         }
 
-        int activity = select(max_sd + 1, &read_fds, NULL, NULL, NULL);
+        struct timeval timeout;
+        timeout.tv_sec = 5; // 5 seconds timeout
+        timeout.tv_usec = 0; // 0 microseconds
+
+        int activity = select(max_sd + 1, &read_fds, NULL, NULL, &timeout);
 
         if (activity < 0)
 		{
 			throw std::runtime_error("Error: select failed");
         }
-
+        else if (activity == 0)
+        {
+            for (std::vector<int>::iterator it = _client_fds.begin(); it != _client_fds.end(); ++it)
+            {
+                Request req;
+                _rawRequest.clear();
+                _rawRequest = "timeout";
+                req.parseRequest(_rawRequest);
+                req.onMessageReceived(*it, server);
+                continue ;
+            }
+        }
         // Check for new incoming connections
         if (FD_ISSET(_server_fd, &read_fds)) {
             int new_socket;
