@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:31:04 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/29 11:02:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Location::Location(Server *server) : _server(server)
     _errorPages.insert(std::pair<int, const std::string>(410, "error_pages/410.html"));
     _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
     _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
+    _errorPages.insert(std::pair<int, const std::string>(502, "error_pages/502.html"));
 }
 
 Location::Location(const Location &copy)

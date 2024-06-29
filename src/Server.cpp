@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:24:27 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/29 11:02:21 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ Server::Server() : _maxBodySize(0)
     _errorPages.insert(std::pair<int, const std::string>(410, "error_pages/410.html"));
     _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
     _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
+    _errorPages.insert(std::pair<int, const std::string>(502, "error_pages/502.html"));
 }
 
 Server::~Server()
