@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 17:56:01 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 17:58:59 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ void    Request::initializeVariables(const Server &server)
 					_redirectCode = (*it)->getRedirectCode();
 				}
                 _cgi = (*it)->getCGI();
-                if (!_cgi.empty() && _cgi.begin()->first == extension)
+                if (!_cgi.empty() && !_cgi[extension].empty())
                     _is_cgi = true;
 				if (!(*it)->getErrorPages().empty())
 					_errorPages = (*it)->getErrorPages();
@@ -212,7 +212,8 @@ void    Request::handleCgiRequest(const Server &server)
     if (getcwd(cwd, PATH_MAX) == NULL)
         throw std::runtime_error("Error: getcwd failed");
     std::string filename = std::string(cwd) + "/" + _rootPath + _path;
-    char    *list_buffer[100] = {const_cast<char *>((_cgi.begin()->second).c_str()), const_cast<char *>((filename).c_str()), NULL};
+    std::string extension = _path.rfind(".") != std::string::npos ? _path.substr(_path.rfind(".")) : "";
+    char    *list_buffer[100] = {const_cast<char *>((_cgi[extension]).c_str()), const_cast<char *>((filename).c_str()), NULL};
     int     pipefd[2];
     pid_t   pid;
     std::ifstream file((_rootPath + _path).c_str());
