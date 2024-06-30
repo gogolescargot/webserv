@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/29 13:14:23 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 11:44:47 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/wait.h>
 #include "Location.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
@@ -55,6 +56,7 @@ class Request
         bool payload_too_large;
 		bool _allowed_method;
         bool _auto_index;
+        bool _is_cgi;
 	public:
 		Request();
 		~Request();
@@ -66,6 +68,7 @@ class Request
 		void handlePostRequest(const Server &server);
 		void handleDeleteRequest(const Server &server);
 		void handleGetRequest(const Server &server);
+        void handleCgiRequest(const Server &server);
 		void onMessageReceived(int client_fd, const Server &server);
 		int	checkRequest(std::string &msg);
 		void fillContent(const std::string &status, const std::string &contenttype, const std::string &filename, const Server &server);
