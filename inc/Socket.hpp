@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:56 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/26 13:33:14 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/06/30 21:14:44 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,16 @@ class Socket {
 		Socket();
 		~Socket();
 		Socket(std::vector<Server*>);
-		void launchSocket(const Server&);
-		int const &getServerFD() const;
+        std::vector<int> const &getServerFD() const;
 		std::vector<int> const &getClientFD() const;
 	private:
-		std::vector<Server> _servers;
-		int _server_fd;
+		void launchSocket(Server *server);
+        void eventLoop();
+
+        std::vector<Server*> _servers;
+        std::vector<int> _server_fds;
 		std::vector<int> _client_fds;
+        std::map<int, Server *> _server_map;
+        std::map<int, Server*> _client_map;
 		std::string			 _rawRequest;
 };

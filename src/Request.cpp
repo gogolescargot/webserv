@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 17:58:59 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 21:19:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ Request::Request()
     _cgi.clear();
 	_is_redirect = false;
     timeout = false;
-    payload_too_large = false;
     _is_cgi = false;
 }
 
@@ -344,9 +343,7 @@ void Request::handleDeleteRequest(const Server &server)
 
 void	Request::onMessageReceived(int client_fd, const Server &server)
 {
-    if (payload_too_large)
-        fillContent("413 Payload Too Large", "text/html", getErrorPage(413), server);
-    else if (timeout)
+    if (timeout)
         fillContent("408 Request Timeout", "text/html", getErrorPage(408), server);
     else if (is_bad_request)
 		fillContent("400 Bad Request", "text/html", getErrorPage(400), server);
@@ -410,8 +407,6 @@ void	Request::parseRequest(std::string &msg)
         _httpVersion = "HTTP/1.1";
         if (msg == "timeout")
             timeout = true;
-        else if (msg == "payload")
-            payload_too_large = true;
         else
             is_bad_request = true;
         return ;

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 17:44:44 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 21:19:18 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ class Request
 		bool _is_redirect;
 		bool is_bad_request;
         bool timeout;
-        bool payload_too_large;
 		bool _allowed_method;
         bool _auto_index;
         bool _is_cgi;

@@ -6,14 +6,15 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/29 13:07:17 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 21:04:32 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 
-Server::Server() : _maxBodySize(0)
+Server::Server()
 {
+    _maxBodySize = 0;
 	_errorPages.insert(std::pair<int, const std::string>(204, "error_pages/204.html"));
     _errorPages.insert(std::pair<int, const std::string>(400, "error_pages/400.html"));
     _errorPages.insert(std::pair<int, const std::string>(403, "error_pages/403.html"));
@@ -28,7 +29,6 @@ Server::Server() : _maxBodySize(0)
 
 Server::~Server()
 {
-
 	for (std::vector<Location *>::iterator it = _locations.begin(); it != _locations.end(); it++)
 		delete *it;
 }
