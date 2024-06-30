@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:59 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 11:44:47 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 17:44:44 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/wait.h>
+#include <limits.h>
+#include <unistd.h>
 #include "Location.hpp"
 #include "Server.hpp"
 #include "utils.hpp"
@@ -44,6 +46,7 @@ class Request
 		std::map<std::string, std::string> _headers;
 		std::map<std::string, std::string> _mimeTypes;
 		std::map<int, const std::string> _errorPages;
+        std::map<std::string, std::string> _cgi;
 		std::string _content;
 		std::string _body;
         std::string _rootPath;

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 11:57:07 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 17:56:01 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Request::Request()
 	_prefix.clear();
 	_redirectCode = 0;
 	_redirectPath.clear();
+    _cgi.clear();
 	_is_redirect = false;
     timeout = false;
     payload_too_large = false;
@@ -150,6 +151,7 @@ void    Request::initializeVariables(const Server &server)
 	std::vector<std::string> indexes;
 	std::vector<std::string> allow_methods;
     std::vector<Location *> locations = server.getLocations();
+    std::string extension = _path.rfind(".") != std::string::npos ? _path.substr(_path.rfind(".")) : "";
 
     _rootPath = server.getRootPath();
     _uploadDir = server.getUploadDir();
@@ -165,8 +167,10 @@ void    Request::initializeVariables(const Server &server)
 					_is_redirect = true;
 					_redirectPath = (*it)->getRedirectPath();
 					_redirectCode = (*it)->getRedirectCode();
-                    _is_cgi = (*it)->getCgi();
 				}
+                _cgi = (*it)->getCGI();
+                if (!_cgi.empty() && _cgi.begin()->first == extension)
+                    _is_cgi = true;
 				if (!(*it)->getErrorPages().empty())
 					_errorPages = (*it)->getErrorPages();
 				_prefix = (*it)->getPath();
@@ -203,7 +207,12 @@ void    Request::initializeVariables(const Server &server)
 void    Request::handleCgiRequest(const Server &server)
 {
     char    buffer[2000];
-    char    *list_buffer[100] = {const_cast<char *>("/usr/bin/php-cgi"), const_cast<char *>((_rootPath + _path).c_str()), NULL};
+    char    cwd[PATH_MAX];
+    
+    if (getcwd(cwd, PATH_MAX) == NULL)
+        throw std::runtime_error("Error: getcwd failed");
+    std::string filename = std::string(cwd) + "/" + _rootPath + _path;
+    char    *list_buffer[100] = {const_cast<char *>((_cgi.begin()->second).c_str()), const_cast<char *>((filename).c_str()), NULL};
     int     pipefd[2];
     pid_t   pid;
     std::ifstream file((_rootPath + _path).c_str());
@@ -211,7 +220,7 @@ void    Request::handleCgiRequest(const Server &server)
 
     stat((_rootPath + _path).c_str(), &fileStat);
     if (file && file.is_open() && !S_ISDIR(fileStat.st_mode))
-    {    
+    {
         if (pipe(pipefd) == -1)
             throw std::runtime_error("Error: pipe failed");
         if ((pid = fork()) == -1)
@@ -221,7 +230,7 @@ void    Request::handleCgiRequest(const Server &server)
             close(pipefd[0]);
             dup2(pipefd[1], 1);
             close(pipefd[1]);
-            if (execve(list_buffer[0], list_buffer, NULL) == -1)
+            if (execve((_cgi.begin()->second).c_str(), list_buffer, NULL) == -1)
                 throw std::runtime_error("Error: execve failed");
         }
         else
@@ -236,7 +245,7 @@ void    Request::handleCgiRequest(const Server &server)
             waitpid(pid, NULL, 0);
             _headers["Content-Type"] = "text/html";
             _headers["Status"] = "200 OK";
-            _body = buffer;
+            _content = buffer;
         }
     }
     else
@@ -252,7 +261,7 @@ void	Request::handleGetRequest(const Server &server)
 
     if (_is_cgi)
         handleCgiRequest(server);
-	if (_path != "/" && _path[_path.size() - 1] == '/' && _auto_index)
+	else if (_path != "/" && _path[_path.size() - 1] == '/' && _auto_index)
 	{
 		_headers["Status"] = "200 OK";
 		_headers["Content-Type"] = "text/html";
@@ -371,7 +380,7 @@ void	Request::onMessageReceived(int client_fd, const Server &server)
 	for (std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); it++)
 		response += it->first + ": " + it->second + CRLF;
 	response += CRLF + _content;
-	if ((_method == "POST" || _is_cgi) && !_body.empty())
+	if (_method == "POST" && !_body.empty())
 		response += CRLF + _body;
 	//std::cout << "Response: [" << response  << "]" << std::endl;
 	send(client_fd, response.c_str(), response.size() + 1, 0);

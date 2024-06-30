@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/29 13:07:24 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 17:31:00 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,9 +219,18 @@ void Location::addCGI(std::istringstream &iss)
 {
 	std::string extension;
 	std::string path;
-	
+    struct stat fileStat;
+    
 	if (!(iss >> extension >> path))
 		throw std::runtime_error("Error: invalid CGI");
+    if (access(path.c_str(), F_OK) == -1)
+        throw std::runtime_error("Error: invalid cgi executable path, path does not exist");
+    if (access(path.c_str(), X_OK) == -1)
+        throw std::runtime_error("Error: invalid cgi executable path, path is not executable");
+    if (stat((path).c_str(), &fileStat) && S_ISDIR(fileStat.st_mode))
+    {
+        throw std::runtime_error("Error: invalid cgi executable path, path is a directory");
+    }
 	_cgi[extension] = path;
 }
 
