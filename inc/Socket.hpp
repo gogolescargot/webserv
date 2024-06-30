@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 12:46:56 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 21:14:44 by marvin           ###   ########.fr       */
+/*   Updated: 2024/06/30 21:29:06 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class Socket {
 		void launchSocket(Server *server);
         void eventLoop();
 
-        std::vector<Server*> _servers;
         std::vector<int> _server_fds;
 		std::vector<int> _client_fds;
         std::map<int, Server *> _server_map;

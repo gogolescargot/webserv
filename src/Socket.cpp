@@ -25,10 +25,6 @@ Socket::~Socket()
     {
         close(_server_fds[i]);
     }
-    for (size_t i = 0; i < _servers.size(); i++)
-    {
-        delete _servers[i];
-    }
 }
 
 Socket::Socket(std::vector<Server*> serverList)
