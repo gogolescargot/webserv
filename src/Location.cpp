@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: luynagda <luynagda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 17:31:00 by marvin           ###   ########.fr       */
+/*   Updated: 2024/09/08 15:43:10 by luynagda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,16 @@ const std::string &Location::getErrorPage(int ErrorCode) const
 		return _errorPages.find(ErrorCode)->second;
 	else 
 		return _errorPages.find(404)->second;
+}
+
+const bool &Location::getErrorPageSet() const
+{
+    return _errorPageSet;
+}
+
+void Location::setErrorPageSet(bool errorPageSet)
+{
+    _errorPageSet = errorPageSet;
 }
 
 void Location::setErrorPages(int errCode, const std::string &errorPages)

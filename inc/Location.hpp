@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: luynagda <luynagda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:17:35 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:23:40 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 15:42:45 by luynagda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Location
 		void setRedirect(std::istringstream &iss);
 		void addCGI(std::istringstream &iss);
 		void setUploadDir(std::istringstream &iss);
+        void setErrorPageSet(bool errorPageSet);
 		
 		const std::string &getPath() const;
 		const std::string &getRootPath() const;
@@ -53,6 +54,7 @@ class Location
 		Server *getServer() const;
 		const std::map<std::string, std::string> &getCGI() const;
 		const std::string &getUploadDir() const;
+        const bool &getErrorPageSet() const;
 
 	private:
 		std::string							_path;
@@ -67,4 +69,5 @@ class Location
 		Server								*_server;
 		std::map<std::string, std::string>	_cgi;
 		std::string							_uploadDir;
+        bool                                _errorPageSet;
 };

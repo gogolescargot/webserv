@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: luynagda <luynagda@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 16:08:55 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 21:19:10 by marvin           ###   ########.fr       */
+/*   Updated: 2024/09/08 15:45:15 by luynagda         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void    Request::initializeVariables(const Server &server)
                 _cgi = (*it)->getCGI();
                 if (!_cgi.empty() && !_cgi[extension].empty())
                     _is_cgi = true;
-				if (!(*it)->getErrorPages().empty())
+				if ((*it)->getErrorPageSet())
 					_errorPages = (*it)->getErrorPages();
 				_prefix = (*it)->getPath();
 				location = *it;
