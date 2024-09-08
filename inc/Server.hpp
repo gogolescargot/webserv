@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/28 16:24:05 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 14:37:33 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ class Server
 		const int &getRedirectCode() const;
 		const std::map<std::string, std::string> &getCGI() const;
 		const std::string &getUploadDir() const;
+		const bool &getFilesExist() const;
 
 		void displayServer();
 
@@ -68,4 +69,5 @@ class Server
 		std::map<std::string, std::string>	_cgi;
 		std::string							_uploadDir;
 		int									_port;
+		bool								allFilesExist;
 };

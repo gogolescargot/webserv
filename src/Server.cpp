@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/06/30 21:04:32 by marvin           ###   ########.fr       */
+/*   Updated: 2024/09/08 14:38:38 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Server::Server()
 {
     _maxBodySize = 0;
+	allFilesExist = true;
 	_errorPages.insert(std::pair<int, const std::string>(204, "error_pages/204.html"));
     _errorPages.insert(std::pair<int, const std::string>(400, "error_pages/400.html"));
     _errorPages.insert(std::pair<int, const std::string>(403, "error_pages/403.html"));
@@ -25,6 +26,15 @@ Server::Server()
     _errorPages.insert(std::pair<int, const std::string>(413, "error_pages/413.html"));
     _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
     _errorPages.insert(std::pair<int, const std::string>(502, "error_pages/502.html"));
+
+	for (const auto& errorPage : _errorPages)
+	{
+		if (access(errorPage.second.c_str(), F_OK) == -1)
+		{
+			allFilesExist = false;
+			break;
+		}
+	}	
 }
 
 Server::~Server()
@@ -133,6 +143,11 @@ const std::vector<std::string> &Server::getAllowMethods() const
 const bool &Server::getRedirect() const
 {
 	return _redirect;
+}
+
+const bool &Server::getFilesExist() const
+{
+	return allFilesExist;
 }
 
 const std::string &Server::getRedirectPath() const
