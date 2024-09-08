@@ -6,7 +6,7 @@
 /*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/09/08 14:38:38 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 14:54:43 by lunagda          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,14 @@ Server::Server()
     _errorPages.insert(std::pair<int, const std::string>(500, "error_pages/500.html"));
     _errorPages.insert(std::pair<int, const std::string>(502, "error_pages/502.html"));
 
-	for (const auto& errorPage : _errorPages)
+	for (std::map<int, const std::string>::iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
 	{
-		if (access(errorPage.second.c_str(), F_OK) == -1)
+		if (access(it->second.c_str(), F_OK) == -1)
 		{
 			allFilesExist = false;
 			break;
 		}
-	}	
+	}
 }
 
 Server::~Server()
