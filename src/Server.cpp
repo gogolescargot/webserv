@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:14:19 by lunagda           #+#    #+#             */
-/*   Updated: 2024/09/08 14:54:43 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 21:37:02 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ Server::~Server()
 		delete *it;
 }
 
-void Server::setHostName(const std::string &hostname)
+void Server::setHostName(const std::string &hostname, std::vector<Server *> &serverList)
 {
 	std::istringstream stream(hostname);
 	std::string line;
@@ -54,6 +54,14 @@ void Server::setHostName(const std::string &hostname)
 			_hostname = line;
 		else
 			_port = std::atoi(line.c_str());
+	}
+
+	for (size_t i = 0; i < serverList.size() - 1; i++)
+	{
+		if (_port == serverList[i]->getPort())
+		{
+			throw std::runtime_error("Formatting error: Duplicate port");
+		}
 	}
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:07:12 by lunagda           #+#    #+#             */
-/*   Updated: 2024/09/08 14:37:33 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 21:34:25 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class Server
 	public:
 		Server();
 		~Server();
-		void setHostName(const std::string &hostname);
+		void setHostName(const std::string &hostname, std::vector<Server *> &serverList);
 		void setErrorPages(int errCode, const std::string &errorPages);
 		void setMaxBodySize(size_t maxBodySize);
 		void addLocation(Location *location);

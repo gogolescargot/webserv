@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:40:32 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/21 17:35:13 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/09/08 21:34:59 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class ConfigFile
 		int checkToken(const size_t&, const std::string&);
 		int checkTokenFunction(const size_t &, int (*func)(int));
 		int isKeyword(size_t&);
-		int getArgument(size_t&, Server&);
+		int getArgument(size_t&, Server&, std::vector<Server *>&);
 		int getMultipleArgument(size_t &i, Server &server);
 
 		int checkErrorPages(size_t i);

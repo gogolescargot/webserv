@@ -6,7 +6,7 @@
 /*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/09/08 15:56:44 by ggalon           ###   ########.fr       */
+/*   Updated: 2024/09/08 21:10:38 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ int ConfigFile::parse(std::vector<Server *> &serverList)
 			}
 		}
 	}
+	
 	return (0);
 }
 
@@ -189,7 +190,7 @@ int ConfigFile::isKeyword(size_t &i)
 	return (0);
 }
 
-int ConfigFile::getArgument(size_t &i, Server &server)
+int ConfigFile::getArgument(size_t &i, Server &server, std::vector<Server *> &serverList)
 {
 	const int key = i;
 
@@ -204,7 +205,7 @@ int ConfigFile::getArgument(size_t &i, Server &server)
 
 	if (checkToken(key, "listen"))
 	{
-		server.setHostName(_tokens[i]);
+		server.setHostName(_tokens[i], serverList);
 	}
 	else if (checkToken(key, "client_max_body_size"))
 	{
@@ -653,7 +654,7 @@ int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 		{
 			if (isKeyword(i) == 1)
 			{
-				if (getArgument(i, *server))
+				if (getArgument(i, *server, serverList))
 				{
 					return (1);
 				}
