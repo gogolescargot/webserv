@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luynagda <luynagda@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/18 14:36:48 by lunagda           #+#    #+#             */
-/*   Updated: 2024/09/08 15:43:10 by luynagda         ###   ########.fr       */
+/*   Updated: 2024/09/08 15:54:43 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ Location::Location(Server *server) : _server(server)
     _autoIndex = false;
     _redirect = false;
     _redirectCode = 0;
+	_errorPageSet = false;
     _path.clear();
     _root.clear();
     _indexes.clear();

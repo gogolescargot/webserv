@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ConfigFile.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lunagda <lunagda@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ggalon <ggalon@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 21:47:07 by ggalon            #+#    #+#             */
-/*   Updated: 2024/06/26 14:15:08 by lunagda          ###   ########.fr       */
+/*   Updated: 2024/09/08 15:56:44 by ggalon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,6 +247,11 @@ int ConfigFile::checkErrorPages(size_t i)
 	if (checkTokenFunction(i, isSeparator))
 	{
 		throw std::runtime_error("Formatting error: Not enough argument");
+	}
+
+	if (access(_tokens[i].c_str(), F_OK) == -1)
+	{
+		throw std::runtime_error("File not found error: The error pages mentioned do not exist.");
 	}
 
 	i++;
@@ -563,6 +568,11 @@ int ConfigFile::getLocation(size_t &i, Server &server)
 
 	i++;
 	
+	// if (!location->getFilesExist())
+	// {
+	// 	throw std::runtime_error("File not found error: The error pages mentioned do not exist.");
+	// } 
+
 	if (checkTokenFunction(i, isSeparator))
 	{
 		throw std::runtime_error("Formatting error: Missing location path");
@@ -615,6 +625,11 @@ int ConfigFile::createServer(size_t &i, std::vector<Server *> &serverList)
 	size_t bracket = 0;
 
 	i++;
+
+	if (!server->getFilesExist())
+	{
+		throw std::runtime_error("File not found error: The error pages mentioned do not exist.");
+	} 
 
 	if (!checkToken(i, "{"))
 	{
